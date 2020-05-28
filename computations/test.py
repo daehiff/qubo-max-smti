@@ -10,6 +10,8 @@ def main_test():
     size = 6
     p1 = 1
     p2 = 0.8
-    matching = create_smti_instance(size, p1, p2)
+    for index_f in range(1000):
+        matching = create_and_save_smti(index_f, size, p1, p2)
+
     solver = QbsolvSMTI(matching)
     print(solver.solve(verbose=True))
