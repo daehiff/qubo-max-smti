@@ -10,12 +10,12 @@ def main_test():
     size = 5
     p1 = 0.5
     p2 = 0.5
-    num = 10
+    num = 100
     for index_f in range(num):
-        matching = create_and_save_smti(num, index_f, size, p1, p2)
+        matching = create_and_save_smti(index_f, size, p1, p2)
 
     for index_f in range(num):
-        matching = get_smti(size, num, p1, p2, index_f)
+        matching = get_smti(size, p1, p2, index_f)
         solver = QbsolvSMTI(matching, mode="np")
         solver.create_qubo()
         solution = solver.solve(verbose=False)

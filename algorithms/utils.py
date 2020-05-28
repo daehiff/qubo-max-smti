@@ -1,8 +1,6 @@
 import logging
 import sys
 
-from algorithms.maching import Matching
-
 
 def init_log():
     formatter = logging.Formatter(fmt='%(asctime)s %(levelname)-8s %(message)s',
@@ -24,10 +22,6 @@ def create_males_and_females(size):
     males = ["M" + str(index) for index in range(size)]
     females = ["W" + str(index) for index in range(size)]
     return males, females
-
-
-def deepcopy_matching(matching):
-    return Matching(matching.males, matching.females, matching.males_pref, matching.females_pref)
 
 
 def compute_qubo_vector_lp(lp_solution, solver):

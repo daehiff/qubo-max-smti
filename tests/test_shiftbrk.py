@@ -3,7 +3,7 @@ import unittest
 from algorithms.solver.SMTI.shift_brk.shiftbrkmatching import ShiftBrkMatching
 from algorithms.solver.SMP.std_smp import StandardSMP
 from algorithms.solver.SMTI.shift_brk.shift_brk import ShiftBrk
-from tests.mocks import mock_matching_smti
+from tests.utils.mocks import mock_matching_smti
 
 
 class ModelTest(unittest.TestCase):

@@ -1,8 +1,7 @@
 import unittest
 
-import tests.mocks as mock
+import tests.utils.mocks as mock
 from algorithms.create_templates import create_smti_instance
-from algorithms.maching import Matching
 from algorithms.solver.SMTI.kiraly.kiralySMTI import Kirialy1, Kirialy2
 from algorithms.solver.SMTI.kiraly.RGS import RGS
 from algorithms.solver.SMTI.lp_smti import LP_smti

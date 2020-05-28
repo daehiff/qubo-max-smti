@@ -5,12 +5,16 @@ import algorithms.utils as ut
 
 
 class Matching:
-    def __init__(self, males, females, males_pref, females_pref):
+    def __init__(self, males, females, males_pref, females_pref, solutions=None):
         self.size = len(males)
         self.males = males
         self.females = females
         self.males_pref = males_pref
         self.females_pref = females_pref
+        if solutions is None:
+            self.solutions = []
+        else:
+            self.solutions = solutions
 
     def get_preference_list(self, person):
         """
@@ -245,3 +249,9 @@ class Matching:
                     tie_lenght.append(tie_len)
             tie_lenght.append(tie_len)
         return tie_lenght
+
+    def compute_all_solutions(self, mode="SMTI"):
+        if mode == "SMTI":
+            pass
+        else:
+            raise Exception(f"Mode: {mode} not implemented jet")
