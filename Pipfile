@@ -12,6 +12,7 @@ matplotlib = "*"
 dwave-system = "*"
 ortools = "*"
 coverage = "*"
+scipy = "*"
 
 [requires]
 python_version = "3.8"

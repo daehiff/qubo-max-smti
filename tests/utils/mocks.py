@@ -15,6 +15,10 @@ def mock_matching_smti(mock_nr=0):
         return Matching(deepcopy(males), deepcopy(females), deepcopy(males_pref_smti), deepcopy(females_pref_smti))
     elif mock_nr == 1:
         return Matching(deepcopy(males), deepcopy(females), deepcopy(males_pref_smti_1), deepcopy(females_pref_smti_1))
+    elif mock_nr == 2:
+        return Matching(deepcopy(males[:2]), deepcopy(females[:2]),
+                        deepcopy(males_pref_smti_2),
+                        deepcopy(females_pref_smti_2))
     else:
         raise Exception(f"unknown mock nr {mock_nr}")
 
@@ -137,6 +141,32 @@ males_pref_smti_1 = {
         "W3": 1,
         "W0": 2,
         "W1": 3
+    }
+}
+
+####################################
+#       SMTI MOCK #3
+####################################
+
+females_pref_smti_2 = {
+    "W0": {
+        "M0": 0,
+        "M1": 0,
+    },
+    "W1": {
+        "M0": 0,
+        "M1": 0
+    }
+}
+
+males_pref_smti_2 = {
+    "M0": {
+        "W0": 0,
+        "W1": 0
+    },
+    "M1": {
+        "W0": 0,
+        "W1": 0
     }
 }
 

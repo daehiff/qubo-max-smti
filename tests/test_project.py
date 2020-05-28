@@ -1,14 +1,16 @@
+import itertools
 import unittest
 
-from algorithms.create_templates import create_smp_instance
+from algorithms.create_templates import create_smp_instance, create_smti_instance
 from algorithms.solution import Solution
 from algorithms.solver.SMP.qubo_smp import QbsolvSMP
 from algorithms.solver.SMP.std_smp import StandardSMP
 from algorithms.solver.SMTI.lp_smti import LP_smti
 from algorithms.solver.SMTI.qubo_smti import QbsolvSMTI
 from tests.utils import mocks as mock
-
+import algorithms.utils as ut
 from tests.utils.mocks import mock_matching_smti, mock_matching_smp
+import math
 
 
 class ModelTest(unittest.TestCase):
@@ -92,3 +94,38 @@ class ModelTest(unittest.TestCase):
 
         # self.assertEqual(qubo_lp_solution.is_stable("smp"), (True, 5))
         self.assertEqual(qubo_lp_solution.is_stable("smti"), (True, 5))
+
+    def test_generate_all_solutions_smti(self):
+        def compute_solution_count(n):
+            return sum([math.comb((n * n), i) for i in range(1, n + 1)])
+
+        for size in range(5):
+            matching = create_smti_instance(size, 0.5, 0.5)
+            all_possibilites = ut.get_all_matches(matching.males, matching.females, matching.size)
+            self.assertEqual(compute_solution_count(size), len(all_possibilites))
+            matching.compute_all_solutions()
+            for match in matching.solutions:
+                (stable, s_size) = Solution(matching, match).is_stable()
+                self.assertTrue(stable, "solution was not stable")
+                self.assertTrue(s_size <= size, "solution size was bigger then expected")
+                self.assertTrue(size != -1, "solution had somebody matched twice")
+
+        matching = mock_matching_smti(2)
+        matching.compute_all_solutions()
+        self.assertEqual(2, len(matching.solutions))
+
+    def test_generate_all_solutions_smp(self):
+        for size in range(5):
+            matching = create_smp_instance(size)
+            all_possibilites = ut.get_all_matches(matching.males, matching.females, matching.size, mode="SMP")
+            self.assertEqual(math.factorial(size), len(all_possibilites))
+            matching.compute_all_solutions(mode="SMP")
+            for match in matching.solutions:
+                (stable, s_size) = Solution(matching, match).is_stable()
+                self.assertTrue(stable, "solution was not stable")
+                self.assertTrue(s_size == size, "solution differed in size")
+                self.assertTrue(size != -1, "solution had somebody matched twice")
+
+        matching = mock_matching_smp()
+        matching.compute_all_solutions()
+        self.assertEqual(2, len(matching.solutions))

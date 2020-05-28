@@ -1,4 +1,5 @@
 import collections
+import itertools
 import operator
 from copy import deepcopy
 import algorithms.utils as ut
@@ -251,7 +252,23 @@ class Matching:
         return tie_lenght
 
     def compute_all_solutions(self, mode="SMTI"):
+        from algorithms.solution import Solution
         if mode == "SMTI":
-            pass
+            all_matches = ut.get_all_matches(self.males, self.females, self.size)
+            all_solutions = []
+            for match in all_matches:
+                (stable, size) = Solution(self, match).is_stable()
+                if stable:
+                    all_solutions.append(match)
+            self.solutions = all_solutions
+        elif mode == "SMP":
+            all_comb = ut.get_all_matches(self.males, self.females, self.size, mode="SMP")
+            all_solutions = []
+            for match in all_comb:
+                (stable, size) = Solution(self, match).is_stable()
+                if stable:
+                    all_solutions.append(match)
+            self.solutions = all_solutions
+
         else:
             raise Exception(f"Mode: {mode} not implemented jet")
