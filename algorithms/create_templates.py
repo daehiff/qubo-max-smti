@@ -82,20 +82,22 @@ def create_and_save_smti(index_f: int, size: int, p1: float, p2: float, compute_
     """
     tmp_match = create_smti_instance(size, p1, p2)
     if compute_solutions:
-        tmp_match.compute_all_solutions()
+        tmp_match.compute_all_solutions(mode="SMTI")
     store.store_smti(tmp_match, p1, p2, index_f)
     return tmp_match
 
 
-def create_and_save_smp(index_f: int, size: int):
+def create_and_save_smp(index_f: int, size: int, compute_solutions=False):
     """
     creates and stores one instance of smp, in the corresponding folder
-    :param num:
-    :param size:
-    :param index_f:
+    :param compute_solutions: compute all possible solutions
+    :param size: how many males females <=> size
+    :param index_f:unique index of this instance, if not unique it will
     :return:
     """
     tmp_match = create_smp_instance(size)
+    if compute_solutions:
+        tmp_match.compute_all_solutions(mode="SMP")
     store.store_smp(tmp_match, index_f)
     return tmp_match
 
