@@ -11,6 +11,7 @@ dwave-qbsolv = "*"
 matplotlib = "*"
 dwave-system = "*"
 ortools = "*"
+coverage = "*"
 
 [requires]
 python_version = "3.8"
