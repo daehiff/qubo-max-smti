@@ -155,8 +155,8 @@ def create_smp_instance(size):
 def create_and_save_smti(num, index_f, size, p1, p2):
     """
     create one instance for SMTI
-    :param num:
-    :param index_f:
+    :param num: how many in general
+    :param index_f: which of thos samples
     :param size: how many males females <=> size
     :param p1: (0,1] => possibility that an element will be IN the preflist => determines the lenght
     :param p2: (0,1] => possibility of a tie

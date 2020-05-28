@@ -1,6 +1,9 @@
+# temporary added storage
+storage/*
+
 # IDEAS
 .DS_Store
-.idea/
+.idea/*
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json

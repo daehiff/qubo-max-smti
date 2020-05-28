@@ -10,17 +10,19 @@ class QbsolvSMTI:
 
     def __init__(self, matching, mode="bqm"):
         self.p = None
-        self.p0 = None
         self.p1 = None
         self.p2 = None
-        self.p2_1 = None
+
         self.qubo = None
+
         self.encoding = None
         self.rev_encoding = None
+
         self.qubo_size = 0
         self.matching = matching
-        self.mode = mode
         self.pre_evaluated_solution = None
+
+        self.mode = mode
 
     def create_encoding(self):
         encoding = {}
@@ -79,7 +81,7 @@ class QbsolvSMTI:
         self.create_encoding()
         assert self.encoding is not None
 
-        self.p, self.p1, self.p2, self.p2_1 = self.get_default_penalties()
+        self.p, self.p1, self.p2 = self.get_default_penalties()
         assert self.p is not None and self.p2 is not None
 
         length = self.qubo_size
@@ -97,16 +99,14 @@ class QbsolvSMTI:
                     self.__assign_qubo(j, i, self.p)
 
             for w_i in self.matching.females:
-                if is_acceptable(m, w_i):
+                if not prefers(m, w, w_i) and is_acceptable(m, w_i):
                     m_w_i = self.rev_encoding[(m, w_i)]
-                    if not prefers(m, w, w_i):
-                        self.__assign_qubo(m_w_i, m_w_i, -self.p2)
+                    self.__assign_qubo(m_w_i, m_w_i, -self.p2)
 
             for m_i in self.matching.males:
-                if is_acceptable(m_i, w):
+                if not prefers(w, m, m_i) and is_acceptable(m_i, w):
                     m_i_w = self.rev_encoding[(m_i, w)]
-                    if not prefers(w, m, m_i):
-                        self.__assign_qubo(m_i_w, m_i_w, -self.p2)
+                    self.__assign_qubo(m_i_w, m_i_w, -self.p2)
 
             for m_i in self.matching.males:
                 for w_i in self.matching.females:
@@ -115,35 +115,12 @@ class QbsolvSMTI:
                         w_m_i = self.rev_encoding[(m_i, w)]
 
                         if not (prefers(m, w, w_i) or prefers(w, m, m_i)):
-                            self.__assign_upper_triangle(m_w_i, w_m_i, self.p2)
+                            if m_w_i <= w_m_i:
+                                self.__assign_qubo(m_w_i, w_m_i, self.p2)
+                            else:
+                                self.__assign_qubo(w_m_i, m_w_i, self.p2)
 
         return self
-
-    def __assign_upper_triangle(self, j, i, val, diagonal=True):
-        if j < i:
-            self.__assign_qubo(j, i, val)
-        elif j > i:
-            self.__assign_qubo(i, j, val)
-        elif diagonal:
-            self.__assign_qubo(i, j, val)
-
-    def solve_multi(self, verbose=True, num_repeats=1000, target=None):
-        if self.qubo is None:
-            self.create_qubo()
-        if self.mode == "np":  # more memory intensive
-            response = QBSolv().sample(BinaryQuadraticModel.from_numpy_matrix(self.qubo), target=target,
-                                       algorithm=ENERGY_IMPACT, solver_limit=1000000)
-        elif self.mode == "bqm":
-            response = QBSolv().sample(self.qubo, num_repeats=num_repeats, algorithm=SOLUTION_DIVERSITY)
-        else:
-            raise Exception(f"mode: {self.mode} cannot be solved yet")
-        if verbose:
-            print(response)
-        stable_energy = -self.p2 * len(self.encoding)
-        energies = list(response.data_vectors['energy'])
-        samples = enumerate(list(response.samples()))
-        allowed_samples = [sample for idx, sample in samples if energies[idx] < stable_energy]
-        return [Solution(self.matching, self.encode(sample)) for sample in allowed_samples]
 
     def solve(self, verbose=False, num_repeats=200, target=None, debug=False):
         if self.qubo is None:
@@ -154,9 +131,9 @@ class QbsolvSMTI:
             return Solution(self.matching, self.pre_evaluated_solution)
         if self.mode == "np":  # more memory intensive
             response = QBSolv().sample(BinaryQuadraticModel.from_numpy_matrix(self.qubo), num_repeats=num_repeats,
-                                       target=target, solver_limit=self.qubo_size, algorithm=SOLUTION_DIVERSITY)
+                                       target=target)
         elif self.mode == "bqm":
-            response = QBSolv().sample(self.qubo, num_repeats=num_repeats, target=target, solver_limit=self.qubo_size)
+            response = QBSolv().sample(self.qubo, num_repeats=num_repeats, target=target)
         else:
             raise Exception(f"mode: {self.mode} cannot be solved yet")
         if debug:
@@ -173,6 +150,5 @@ class QbsolvSMTI:
     def get_default_penalties(self):
         p1 = 1
         p2 = self.matching.size
-        p2_1 = 1
         p = self.matching.size * p2 + p1
-        return p, p1, p2, p2_1
+        return p, p1, p2
