@@ -1,0 +1,16 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+numpy = "*"
+dwave-qbsolv = "*"
+matplotlib = "*"
+dwave-system = "*"
+ortools = "*"
+
+[requires]
+python_version = "3.8"
