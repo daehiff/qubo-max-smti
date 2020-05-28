@@ -1,6 +1,5 @@
 # temporary added storage
-# storage/*
-
+tests/storage/*
 # IDEAS
 .DS_Store
 .idea/*

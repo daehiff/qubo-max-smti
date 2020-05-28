@@ -8,10 +8,15 @@ import csv
 
 from algorithms.solution import Solution
 
-base_dir = "./storage"
+base_dir = os.getenv('STORAGE', "./storage")
 
 
-def update_dir(dir_name, do_remove=True, do_replace=True):
+def init(base_directory: str):
+    global base_dir
+    base_dir = base_directory
+
+
+def update_dir(dir_name: str, do_remove=True, do_replace=True):
     """
     update the current directory
     :param dir_name:
@@ -28,14 +33,30 @@ def update_dir(dir_name, do_remove=True, do_replace=True):
                 os.makedirs(dir_name)
     else:
         index = 0
-        new_dir = dir_name  # TODO
+        new_dir = dir_name
         while os.path.isdir(new_dir):
             new_dir = f"{dir_name}({index})"
         shutil.rmtree(dir_name)
         os.makedirs(dir_name)
 
 
-def store_smp(matching, num, index_f):
+def get_smp(index_f: int, size: int):
+    """
+    get a smp from file with index index_f
+    :param index_f:
+    :param size:
+    :return:
+    """
+    dir_name = get_smp_folder(size)
+    with open(f"{dir_name}/{index_f}.json", 'r') as fp:
+        meta = json.load(fp)
+        males, females = ut.create_males_and_females(meta["size"])
+        matching = Matching(males, females, meta["males_pref"], meta["females_pref"],
+                            solutions=meta["possible_solutions"])
+    return matching
+
+
+def store_smp(matching: Matching, index_f: int):
     """
     Store one smp instance
     :param matching:
@@ -43,12 +64,17 @@ def store_smp(matching, num, index_f):
     :param index_f:
     :return:
     """
-    dir_name = get_smp_folder(matching.size, num, index_f)
-    update_dir(dir_name)
-    with open(f"{dir_name}/females_pref.json", 'w') as fp:
-        json.dump(matching.females_pref, fp)
-    with open(f"{dir_name}/males_pref.json", 'w') as fp:
-        json.dump(matching.males_pref, fp)
+    dir_name = get_smp_folder(matching.size)
+    update_dir(dir_name, do_replace=True, do_remove=False)
+    meta = {
+        "size": matching.size,  # get paricipants: males = females[ M/W_i for i in range(size) ]
+        "males_pref": matching.males_pref,
+        "females_pref": matching.females_pref,
+        "possible_solutions": matching.solutions
+
+    }
+    with open(f"{dir_name}/{index_f}.json", 'w') as fp:
+        json.dump(meta, fp)
 
 
 def store_smti(matching: Matching, p1, p2, index_f):
@@ -70,11 +96,11 @@ def store_smti(matching: Matching, p1, p2, index_f):
         "possible_solutions": matching.solutions
 
     }
-    with open(f"{dir_name}/index_{index_f}.json", 'w') as fp:
+    with open(f"{dir_name}/{index_f}.json", 'w') as fp:
         json.dump(meta, fp)
 
 
-def get_smti(size, p1: float, p2: float, index_f: int) -> Matching:
+def get_smti(size: int, p1: float, p2: float, index_f: int) -> Matching:
     """
     Get one stored SMTI instance, by its size, p1, p2, index_f
     :param size: the size of the smp instance
@@ -84,7 +110,7 @@ def get_smti(size, p1: float, p2: float, index_f: int) -> Matching:
     :return:
     """
     dir_name = get_smti_folder(size, p1, p2)
-    with open(f"{dir_name}/index_{index_f}.json", 'r') as fp:
+    with open(f"{dir_name}/{index_f}.json", 'r') as fp:
         meta = json.load(fp)
         males, females = ut.create_males_and_females(meta["size"])
         matching = Matching(males, females, meta["males_pref"], meta["females_pref"],
@@ -97,14 +123,13 @@ def get_smti_folder(size: int, p1: float, p2: float):
     """
     Get the naming convention for a matching smti folder by its variables
     """
-    dir_name = f"{base_dir}/samples/smti/size_{size}_p1_{p1}_p2_{p2}/"
+    dir_name = f"{base_dir}/samples/smti/size_{size}_p1_{p1}_p2_{p2}"
     return dir_name
 
 
-def get_smp_folder(size: int, num: int, index_f: int):
-    # TODO adjust
+def get_smp_folder(size: int):
     """
     Get the naming convention for a matching smti folder by its variables
     """
-    dir_name = f"{base_dir}/samples/smp/size_{size}_num_{num}/index_{index_f} "
+    dir_name = f"{base_dir}/samples/smp/size_{size}"
     return dir_name

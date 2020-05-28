@@ -55,7 +55,7 @@ def _create_smti_preference(persons, other_persons, size, p1, p2):
     return persons_pref
 
 
-def create_smti_instance(size, p1, p2):
+def create_smti_instance(size: int, p1: float, p2: float):
     """
     create one instance for SMTI
     :param size: how many males females <=> size
@@ -70,7 +70,7 @@ def create_smti_instance(size, p1, p2):
     return Matching(males, females, males_pref, females_pref)
 
 
-def create_and_save_smti(index_f, size, p1, p2, compute_solutions=False):
+def create_and_save_smti(index_f: int, size: int, p1: float, p2: float, compute_solutions=False):
     """
     create one instance for SMTI
     :param index_f: unique sample index
@@ -87,7 +87,7 @@ def create_and_save_smti(index_f, size, p1, p2, compute_solutions=False):
     return tmp_match
 
 
-def create_and_save_smp(num, size, index_f):
+def create_and_save_smp(index_f: int, size: int):
     """
     creates and stores one instance of smp, in the corresponding folder
     :param num:
@@ -96,11 +96,11 @@ def create_and_save_smp(num, size, index_f):
     :return:
     """
     tmp_match = create_smp_instance(size)
-    store.store_smp(tmp_match, num, index_f)
+    store.store_smp(tmp_match, index_f)
     return tmp_match
 
 
-def create_smp_instance(size):
+def create_smp_instance(size: int):
     """
     create a random smp instance
     :param size: size of the instance
