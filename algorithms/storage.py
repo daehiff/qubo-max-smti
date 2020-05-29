@@ -81,15 +81,18 @@ def store_smti(matching: Matching, p1, p2, index_f):
     """
     Store a smti matching
     :param matching: 
-    :param num: 
-    :param p1: 
+    :param p1:
     :param p2: 
     :param index_f: 
     :return: 
     """
-    dir_name = get_smti_folder(matching.size, p1, p2)
+    dir_name = get_smti_folder(matching.size)
     update_dir(dir_name, do_replace=True, do_remove=False)
     meta = {
+        "meta": {
+            "p1": p1,
+            "p2": p2
+        },
         "size": matching.size,  # get paricipants: males = females[ M/W_i for i in range(size) ]
         "males_pref": matching.males_pref,
         "females_pref": matching.females_pref,
@@ -100,7 +103,7 @@ def store_smti(matching: Matching, p1, p2, index_f):
         json.dump(meta, fp)
 
 
-def get_smti(index_f: int, size: int, p1: float, p2: float) -> Matching:
+def get_smti(index_f: int, size: int) -> Matching:
     """
     Get one stored SMTI instance, by its size, p1, p2, index_f
     :param size: the size of the smp instance
@@ -109,21 +112,21 @@ def get_smti(index_f: int, size: int, p1: float, p2: float) -> Matching:
     :param index_f: index of the SMTI instance (unique int)
     :return:
     """
-    dir_name = get_smti_folder(size, p1, p2)
+    dir_name = get_smti_folder(size)
     with open(f"{dir_name}/{index_f}.json", 'r') as fp:
         meta = json.load(fp)
         males, females = ut.create_males_and_females(meta["size"])
         matching = Matching(males, females, meta["males_pref"], meta["females_pref"],
-                            solutions=meta["possible_solutions"])
+                            solutions=meta["possible_solutions"], meta=meta["meta"])
     assert matching is not None
     return matching
 
 
-def get_smti_folder(size: int, p1: float, p2: float):
+def get_smti_folder(size: int):
     """
     Get the naming convention for a matching smti folder by its variables
     """
-    dir_name = f"{base_dir}/samples/smti/size_{size}_p1_{p1}_p2_{p2}"
+    dir_name = f"{base_dir}/samples/smti/size_{size}"
     return dir_name
 
 

@@ -3,10 +3,11 @@ import itertools
 import operator
 from copy import deepcopy
 import algorithms.utils as ut
+import numpy as np
 
 
 class Matching:
-    def __init__(self, males, females, males_pref, females_pref, solutions=None):
+    def __init__(self, males, females, males_pref, females_pref, solutions=None, meta=None):
         self.size = len(males)
         self.males = males
         self.females = females
@@ -16,6 +17,7 @@ class Matching:
             self.solutions = []
         else:
             self.solutions = solutions
+        self.meta = meta
 
     def get_preference_list(self, person):
         """
@@ -273,3 +275,33 @@ class Matching:
 
         else:
             raise Exception(f"Mode: {mode} not implemented jet")
+
+    def average_pref_list_len(self):
+        size = []
+        for male in self.males:
+            size.append(len(self.get_preference_list(male)))
+
+        for female in self.females:
+            size.append(len(self.get_preference_list(female)))
+
+        return np.average(np.array(size))
+
+    def average_tie_len(self):
+        size = []
+        for male in self.males:
+            current_size = 0
+            prev_idx = -1
+            for (_, idx) in self.get_preference_list(male).items():
+                if not prev_idx == idx:
+                    if current_size > 0:
+                        size.append(current_size)
+                    prev_idx = idx
+        for female in self.females:
+            current_size = 0
+            prev_idx = -1
+            for (_, idx) in self.get_preference_list(female).items():
+                if not prev_idx == idx:
+                    if current_size > 0:
+                        size.append(current_size)
+                    prev_idx = idx
+        return np.average(np.array(size))

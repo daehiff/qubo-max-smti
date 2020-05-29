@@ -14,7 +14,6 @@ from scipy.special import comb
 import math
 
 
-
 class ModelTest(unittest.TestCase):
 
     def test_matching_model(self):
@@ -38,6 +37,9 @@ class ModelTest(unittest.TestCase):
         with self.assertRaises(Exception):
             self.assertRaises(matching.get_at_index("M0", 10))
             self.assertRaises(matching.get_next_after_index("M0", 10))
+
+        matching = mock_matching_smti(2)
+        self.assertEqual(matching.average_pref_list_len(), 2, "Average preflist_len of this matching should be 2")
 
         #####################################################################
         # SMP TESTS

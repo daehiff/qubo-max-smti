@@ -14,14 +14,13 @@ import matplotlib.pyplot as plt
 
 
 def main_test():
-    # size 6: ~5min
-    # size 7: ~20min
-    # size 8:
     start = time.time()
     create_and_save_smp(0, 15, compute_solutions=True)
     end = time.time()
     print("Elapsed: ", end - start)
-    return
+
+
+def plot_equidistribution():
     sizes = [i for i in range(3, 31)]
     print(round(random.uniform(0.1, 0.5), 2))
     average_sizes = {size: [] for size in sizes}
@@ -44,14 +43,3 @@ def main_test():
     plt.ylabel("Matching size")
     plt.show()
     print(num_samples)
-
-
-def calculate_average_size(matching: Matching):
-    size = []
-    for male in matching.males:
-        size.append(len(matching.get_preference_list(male)))
-
-    for female in matching.females:
-        size.append(len(matching.get_preference_list(female)))
-
-    return np.average(np.array(size))
