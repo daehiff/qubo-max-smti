@@ -44,13 +44,12 @@ def get_all_matches(males, females, size, mode="SMTI"):
         all_matches = []
         all_combinations = list(itertools.product(males, females))
         for i in range(1, size + 1):
-            tmp = list(map(lambda x: {m: w for m, w in x}, itertools.combinations(all_combinations, i)))
-            all_matches = all_matches + tmp
+            tmp = (map(lambda x: {m: w for m, w in x}, itertools.combinations(all_combinations, i)))
+            all_matches = itertools.chain(all_matches, tmp)
         # all_matches = [dict(s) for s in set(frozenset(d.items()) for d in all_matches)]
         return all_matches
     elif mode == "SMP":
-        all_comb = [list(zip(x, females)) for x in itertools.permutations(males, size)]
-        all_comb = [{m: w for m, w in t} for t in all_comb]
+        all_comb = map(lambda x: {m: w for m, w in zip(x, females)}, itertools.permutations(males, size))
         return all_comb
     else:
         raise Exception(f"unimplemented mode: {mode}")

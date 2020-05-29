@@ -100,7 +100,7 @@ def store_smti(matching: Matching, p1, p2, index_f):
         json.dump(meta, fp)
 
 
-def get_smti(size: int, p1: float, p2: float, index_f: int) -> Matching:
+def get_smti(index_f: int, size: int, p1: float, p2: float) -> Matching:
     """
     Get one stored SMTI instance, by its size, p1, p2, index_f
     :param size: the size of the smp instance

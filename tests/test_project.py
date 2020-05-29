@@ -10,7 +10,9 @@ from algorithms.solver.SMTI.qubo_smti import QbsolvSMTI
 from tests.utils import mocks as mock
 import algorithms.utils as ut
 from tests.utils.mocks import mock_matching_smti, mock_matching_smp
+from scipy.special import comb
 import math
+
 
 
 class ModelTest(unittest.TestCase):
@@ -97,12 +99,12 @@ class ModelTest(unittest.TestCase):
 
     def test_generate_all_solutions_smti(self):
         def compute_solution_count(n):
-            return sum([math.comb((n * n), i) for i in range(1, n + 1)])
+            return sum([comb((n * n), i) for i in range(1, n + 1)])
 
         for size in range(5):
             matching = create_smti_instance(size, 0.5, 0.5)
             all_possibilites = ut.get_all_matches(matching.males, matching.females, matching.size)
-            self.assertEqual(compute_solution_count(size), len(all_possibilites))
+            self.assertEqual(compute_solution_count(size), len(list(all_possibilites)))
             matching.compute_all_solutions()
             for match in matching.solutions:
                 (stable, s_size) = Solution(matching, match).is_stable()
@@ -118,6 +120,7 @@ class ModelTest(unittest.TestCase):
         for size in range(5):
             matching = create_smp_instance(size)
             all_possibilites = ut.get_all_matches(matching.males, matching.females, matching.size, mode="SMP")
+            all_possibilites = list(all_possibilites)
             self.assertEqual(math.factorial(size), len(all_possibilites))
             matching.compute_all_solutions(mode="SMP")
             for match in matching.solutions:

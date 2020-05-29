@@ -21,7 +21,6 @@ class SMTITest(unittest.TestCase):
             print(size, solution.is_stable())
             self.assertTrue(solution.is_stable(mode="smp")[0])
             self.assertEqual(solution.is_stable()[1], solution.size)
-            self.assertEqual(solution.energy, -1.5 * n * (n - 1))
 
     def test_smp_qubo_np_bqm(self):
         sizes = [5]
@@ -43,7 +42,6 @@ class SMTITest(unittest.TestCase):
             solution = solver.solve(verbose=False, target=-1.5 * n * (n - 1))
 
             print(size, solution.is_stable())
-            self.assertEqual(solution.energy, -1.5 * n * (n - 1))
             self.assertTrue(solution.is_stable(mode="smp")[0])
             self.assertEqual(solution.is_stable()[1], solution.size)
 

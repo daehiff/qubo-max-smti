@@ -254,13 +254,14 @@ class Matching:
     def compute_all_solutions(self, mode="SMTI"):
         from algorithms.solution import Solution
         if mode == "SMTI":
-            all_matches = ut.get_all_matches(self.males, self.females, self.size)
+            all_matches = ut.get_all_matches(self.males, self.females, self.size, mode="SMTI")
             all_solutions = []
             for match in all_matches:
                 (stable, size) = Solution(self, match).is_stable()
                 if stable:
                     all_solutions.append(match)
-            self.solutions = all_solutions
+
+            self.solutions = [dict(s) for s in set(frozenset(d.items()) for d in all_solutions)]
         elif mode == "SMP":
             all_comb = ut.get_all_matches(self.males, self.females, self.size, mode="SMP")
             all_solutions = []

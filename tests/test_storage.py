@@ -13,7 +13,7 @@ class SMTITest(unittest.TestCase):
 
         for index_f in range(num):
             m_created = create_and_save_smti(index_f, size, p1, p2)
-            m_read = get_smti(size, p1, p2, index_f)
+            m_read = get_smti(index_f, size, p1, p2)
             self.assertEqual(m_created.males, m_read.males)
             self.assertEqual(m_created.females, m_read.females)
             self.assertEqual(m_created.males_pref, m_read.males_pref)

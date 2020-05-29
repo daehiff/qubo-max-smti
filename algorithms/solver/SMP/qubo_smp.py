@@ -71,7 +71,7 @@ class QbsolvSMP:
         min_en = min(energies)
         ret_match = self.encode(list(response.samples())[energies.index(min_en)])
 
-        return Solution(self.matching, ret_match, energy=min_en)
+        return Solution(self.matching, ret_match)
 
     def solve_multi(self, verbose=True, num_repeats=100, target=None):
         if self.qubo is None:

@@ -29,6 +29,7 @@ def _create_sm_preferences(males, females):
 def _create_smti_preference(persons, other_persons, size, p1, p2):
     """
     create all preferences for one gender
+    Preflists currently start at size: 2
     :param persons: either males list or females list
     :param other_persons:  vice versa list to persons
     :param size: how many males females <=> size
@@ -40,8 +41,8 @@ def _create_smti_preference(persons, other_persons, size, p1, p2):
     persons_pref = {}
     other_persons_1 = deepcopy(other_persons)
     for person in persons:
-        new_len = 1
-        for _ in range(size - 1):
+        new_len = 2
+        for _ in range(size - 2):
             if random.uniform(0, 1) < p1:
                 new_len += 1
         random.shuffle(other_persons_1)
