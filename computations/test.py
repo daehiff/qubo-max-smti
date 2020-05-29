@@ -31,7 +31,7 @@ def plot_equidistribution():
             p1_ = round(random.uniform(0.01, 1), 2)
             p2_ = round(random.uniform(0.01, 1), 2)
             matching = create_smti_instance(size, p1_, p2_)
-            average_sizes[size].append(calculate_average_size(matching))
+            average_sizes[size].append(matching.average_pref_list_len())
         print(f"size: {size}, {num_samples}")
     index = 3
     fig, ax = plt.subplots()
