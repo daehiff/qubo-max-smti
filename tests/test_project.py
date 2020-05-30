@@ -40,7 +40,10 @@ class ModelTest(unittest.TestCase):
 
         matching = mock_matching_smti(2)
         self.assertEqual(matching.average_pref_list_len(), 2, "Average preflist_len of this matching should be 2")
-
+        self.assertEqual(matching.average_tie_len(), 2, "Average preflist_len of this matching should be 2")
+        matching = mock_matching_smti(1)
+        self.assertEqual(matching.average_tie_len(), 2, "Average preflist_len of this matching should be 2")
+        self.assertEqual(matching.average_pref_list_len(), 2.7, "Average preflist_len of this matching should be 2.7")
         #####################################################################
         # SMP TESTS
         #####################################################################

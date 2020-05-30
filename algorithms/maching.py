@@ -308,17 +308,30 @@ class Matching:
             for (_, idx) in self.get_preference_list(male).items():
                 if not prev_idx == idx:
                     if current_size > 0:
-                        size.append(current_size)
+                        size.append(current_size + 1)
+                        current_size = 0
                     prev_idx = idx
+                else:
+                    current_size += 1
+            if current_size != 0:
+                size.append(current_size + 1)
         for female in self.females:
             current_size = 0
             prev_idx = -1
             for (_, idx) in self.get_preference_list(female).items():
                 if not prev_idx == idx:
                     if current_size > 0:
-                        size.append(current_size)
+                        size.append(current_size + 1)
+                        current_size = 0
                     prev_idx = idx
-        return np.average(np.array(size))
+                else:
+                    current_size += 1
+            if current_size != 0:
+                size.append(current_size + 1)
+        if len(size) == 0:
+            return 1
+        else:
+            return np.average(np.array(size))
 
     def _is_matching_stable(self, match, pbar=None):
         from algorithms.solution import Solution
