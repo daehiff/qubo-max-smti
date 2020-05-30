@@ -6,7 +6,7 @@ from algorithms.solution import Solution
 from algorithms.solver.SMP.qubo_smp import QbsolvSMP
 from algorithms.solver.SMP.std_smp import StandardSMP
 from algorithms.solver.SMTI.lp_smti import LP_smti
-from algorithms.solver.SMTI.qubo_smti import QbsolvSMTI
+from algorithms.solver.SMTI.qubo_smti import QUBO_SMTI
 from tests.utils import mocks as mock
 import algorithms.utils as ut
 from tests.utils.mocks import mock_matching_smti, mock_matching_smp
@@ -86,7 +86,7 @@ class ModelTest(unittest.TestCase):
         solution = Solution(matching, matches)
         gs_solution = StandardSMP(matching).solve()
         qubo_solution = QbsolvSMP(matching).solve()
-        qubo_smti_solution = QbsolvSMTI(matching).solve()
+        qubo_smti_solution = QUBO_SMTI(matching).solve()
         qubo_lp_solution = LP_smti(matching).solve()
         self.assertEqual(solution.is_stable("smp"), (True, 5))
         self.assertEqual(solution.is_stable("smti"), (True, 5))  # for smp instances, both methods are supposed to work
