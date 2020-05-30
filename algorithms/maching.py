@@ -275,7 +275,7 @@ class Matching:
             if m_processing:
                 p = Pool(multiprocessing.cpu_count())
                 chunks = math.floor(math.factorial(self.size) / multiprocessing.cpu_count())
-                chunks = min([9979200, chunks])
+                chunks = min([1000000, chunks])
                 print(chunks)
                 all_solutions = p.imap(self._is_matching_stable, all_comb, chunksize=chunks)
                 all_solutions = list(filter(lambda x: x is not None, all_solutions))
