@@ -9,7 +9,7 @@ from algorithms.create_templates import create_smti_instance, create_and_save_sm
 
 def main_generation():
     index_f = 0
-    size = 15
+    size = 13
     matching = create_and_save_smp(index_f, size, compute_solutions=False)
 
     start = time.time()
