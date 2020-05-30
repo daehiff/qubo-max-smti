@@ -8,23 +8,18 @@ from algorithms.storage import get_smti
 
 
 def main_test():
-    size = 5
-    p1 = 0.5
-    p2 = 0.4
-    matching = get_smti(0, size)
+    plot_equidistribution()
 
-    out = QUBO_SMTI(matching, mode="bqm").solve_qa()
-    print(out)
-    out = QUBO_SMTI(matching, mode="bqm").solve(verbose=True)
+
 
 
 def plot_equidistribution():
     sizes = [i for i in range(3, 31)]
-    print(round(random.uniform(0.1, 0.5), 2))
     average_sizes = {size: [] for size in sizes}
     num_samples = 0
+    samples_per_size = 20
     for size in sizes:
-        for _ in range(100):
+        for _ in range(samples_per_size):
             num_samples += 1
             p1 = round(random.uniform(0.01, 1), 2)
             p2 = round(random.uniform(0.01, 1), 2)
@@ -41,3 +36,14 @@ def plot_equidistribution():
     plt.ylabel("Matching size")
     plt.show()
     print(num_samples)
+
+
+def test_qubo():
+    size = 5
+    p1 = 0.5
+    p2 = 0.4
+    matching = get_smti(0, size)
+
+    out = QUBO_SMTI(matching, mode="bqm").solve_qa()
+    print(out)
+    out = QUBO_SMTI(matching, mode="bqm").solve(verbose=True)

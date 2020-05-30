@@ -1,9 +1,14 @@
 import collections
 import itertools
+import multiprocessing
 import operator
 from copy import deepcopy
+
+import math
+
 import algorithms.utils as ut
 import numpy as np
+from multiprocessing import Pool
 
 
 class Matching:
@@ -253,7 +258,7 @@ class Matching:
             tie_lenght.append(tie_len)
         return tie_lenght
 
-    def compute_all_solutions(self, mode="SMTI"):
+    def compute_all_solutions(self, mode="SMTI", m_processing=True):
         from algorithms.solution import Solution
         if mode == "SMTI":
             all_matches = ut.get_all_matches(self.males, self.females, self.size, mode="SMTI")
@@ -267,10 +272,17 @@ class Matching:
         elif mode == "SMP":
             all_comb = ut.get_all_matches(self.males, self.females, self.size, mode="SMP")
             all_solutions = []
-            for match in all_comb:
-                (stable, size) = Solution(self, match).is_stable()
-                if stable:
-                    all_solutions.append(match)
+            if m_processing:
+                p = Pool(multiprocessing.cpu_count())
+                chunks: int = math.floor(math.factorial(self.size) / multiprocessing.cpu_count())
+                print(chunks)
+                all_solutions = p.imap(self._is_matching_stable, all_comb, chunksize=chunks)
+                all_solutions = list(filter(lambda x: x is not None, all_solutions))
+            else:
+                for match in all_comb:
+                    tmp = self._is_matching_stable(match)
+                    if tmp is not None:
+                        all_solutions.append(tmp)
             self.solutions = all_solutions
 
         else:
@@ -305,3 +317,10 @@ class Matching:
                         size.append(current_size)
                     prev_idx = idx
         return np.average(np.array(size))
+
+    def _is_matching_stable(self, match):
+        from algorithms.solution import Solution
+        (stable, size) = Solution(self, match).is_stable()
+        if stable:
+            return match
+        return None

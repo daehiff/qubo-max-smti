@@ -168,8 +168,9 @@ class QUBO_SMTI:
         dw_solver = DWaveSampler(solver=SOLVER, token=self.token, endpoint=ENDPOINT)
         embedding = minorminer.find_embedding(G.edges, dw_solver.edgelist)
         fixed_embedding = FixedEmbeddingComposite(dw_solver, embedding)
-        result = fixed_embedding.sample(self.qubo, num_reads=num_reads, chain_strength=chain_strength)
-
+        # result = fixed_embedding.sample(self.qubo, num_reads=num_reads, chain_strength=chain_strength)
+        print(fixed_embedding.parameters)
+        return
         if verbose:
             print(result)
             for index, (sample, energy, occ, chain) in enumerate(result.record):
