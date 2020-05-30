@@ -9,19 +9,13 @@ from algorithms.create_templates import create_smti_instance, create_and_save_sm
 
 def main_generation():
     index_f = 0
-    size = 11
+    size = 15
     matching = create_and_save_smp(index_f, size, compute_solutions=False)
 
     start = time.time()
     matching.compute_all_solutions(mode="SMP", m_processing=True)
     end = time.time()
     print("Elapsed: ", end - start)
-
-    start = time.time()
-    matching.compute_all_solutions(mode="SMP", m_processing=False)
-    end = time.time()
-    print("Elapsed: ", end - start)
-    # plot_equidistribution()
 
 
 def plot_equidistribution():
