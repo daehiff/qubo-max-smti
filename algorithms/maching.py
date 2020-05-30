@@ -3,12 +3,14 @@ import itertools
 import multiprocessing
 import operator
 from copy import deepcopy
+from functools import partial
 
 import math
 
 import algorithms.utils as ut
 import numpy as np
 from multiprocessing import Pool
+import tqdm
 
 
 class Matching:
@@ -274,11 +276,10 @@ class Matching:
             all_solutions = []
             if m_processing:
                 p = Pool(multiprocessing.cpu_count())
-                chunks = math.floor(math.factorial(self.size) / multiprocessing.cpu_count())
-                chunks = min([1000000000, chunks])
-                print(chunks)
-                all_solutions = p.imap(self._is_matching_stable, all_comb, chunksize=chunks)
-                all_solutions = list(filter(lambda x: x is not None, all_solutions))
+                s_upper = math.factorial(self.size)
+                chunks = math.floor(s_upper / multiprocessing.cpu_count())
+                all_solutions = p.imap_unordered(self._is_matching_stable, all_comb, chunksize=1000)
+                all_solutions = list(filter(lambda x: len(x) != 0, tqdm.tqdm(all_solutions, total=s_upper)))
             else:
                 for match in all_comb:
                     tmp = self._is_matching_stable(match)
@@ -319,9 +320,9 @@ class Matching:
                     prev_idx = idx
         return np.average(np.array(size))
 
-    def _is_matching_stable(self, match):
+    def _is_matching_stable(self, match, pbar=None):
         from algorithms.solution import Solution
         (stable, size) = Solution(self, match).is_stable()
         if stable:
             return match
-        return None
+        return {}
