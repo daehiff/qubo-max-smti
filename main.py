@@ -2,7 +2,8 @@ import sys
 
 # evaluations
 from computations.dataset_generation import main_generation
-from computations.test import main_test
+from computations.smp_measurements import main_smp_measurements
+from computations.time_measurements import main_time_measure
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
@@ -10,10 +11,12 @@ if __name__ == '__main__':
         if sys.argv[1] == "-g":
             main_generation()
         elif sys.argv[1] == "-t":
-            main_test()
+            main_time_measure()
+        elif sys.argv[1] == "-s":
+            main_smp_measurements()
         else:
             print("unspecified argument")
     else:
         print("Please specify:")
         print("\t -g: to generate a new dataset")
-        print("\t -t: if you want to run your testfile")
+        print("\t -t: for time measurement")

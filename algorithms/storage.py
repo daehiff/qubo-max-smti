@@ -1,6 +1,7 @@
 import os
 import shutil
 import algorithms.utils as ut
+import numpy as np
 
 from algorithms.maching import Matching
 import json
@@ -9,11 +10,6 @@ import csv
 from algorithms.solution import Solution
 
 base_dir = os.getenv('STORAGE', "./storage")
-
-
-def init(base_directory: str):
-    global base_dir
-    base_dir = base_directory
 
 
 def update_dir(dir_name: str, do_remove=True, do_replace=True):
@@ -120,6 +116,29 @@ def get_smti(index_f: int, size: int) -> Matching:
                             solutions=meta["possible_solutions"], meta=meta["meta"])
     assert matching is not None
     return matching
+
+
+def store_qa_solution(solution: list, size: int, index_f: int, problem: str):
+    """
+    Store the solution with metadata (energy ect.) into a .npy file
+    :param solution:
+    :param size:
+    :param index_f:
+    :param problem:
+    :return:
+    """
+    solution_folder = get_solution_folder(size, problem=problem)
+    update_dir(solution_folder, do_replace=True, do_remove=False)
+    np.save(f'{solution_folder}/solution_{index_f}.npy', np.array(solution))
+
+
+def get_solution_qa(size: int, index_f: int, problem: str):
+    solution_folder = get_solution_folder(size, problem=problem)
+    return np.load(f'{solution_folder}/solution_{index_f}.npy', allow_pickle=True)
+
+
+def get_solution_folder(size: int, problem="smti"):
+    return f"{base_dir}/solutions/{problem}/size_{size}"
 
 
 def get_smti_folder(size: int):

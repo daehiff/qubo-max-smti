@@ -5,11 +5,12 @@ from algorithms.maching import Matching
 
 class Solution(Matching):
 
-    def __init__(self, matching, matches):
+    def __init__(self, matching, matches, energy=0):
         super().__init__(matching.males, matching.females, matching.males_pref, matching.females_pref)
         self.solution_m = matches
         self.solution_w = {w: m for m, w in matches.items()}
         self.size = len(matches.keys())
+        self.energy = energy
 
     def get_solution(self):
         return self.solution_m

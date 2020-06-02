@@ -6,12 +6,12 @@ from algorithms.create_templates import create_and_save_smti, create_and_save_sm
 from algorithms.storage import get_smti
 
 
-def main_generation(genrate=True):
+def main_generation(generate=False):
     sizes_smti = [i for i in range(3, 31)]
     samples_per_size_smti = 20
-    sizes_smp = [i for i in range(3, 20)]
+    sizes_smp = [i for i in range(3, 21)]
     samples_per_size_smp = 10
-    if genrate:
+    if generate:
         generate_smti_set(sizes_smti, samples_per_size_smti)
         generate_smp_set(sizes_smp, samples_per_size_smp)
     plot_equidistribution_smti(sizes_smti, samples_per_size_smti)

@@ -277,9 +277,8 @@ class Matching:
             if m_processing:
                 p = Pool(multiprocessing.cpu_count())
                 s_upper = math.factorial(self.size)
-                chunks = math.floor(s_upper / multiprocessing.cpu_count())
                 all_solutions = p.imap_unordered(self._is_matching_stable, all_comb, chunksize=1000)
-                all_solutions = list(filter(lambda x: len(x) != 0, tqdm.tqdm(all_solutions, total=s_upper)))
+                all_solutions = list(filter(lambda x: x is not None, tqdm.tqdm(all_solutions, total=s_upper)))
             else:
                 for match in all_comb:
                     tmp = self._is_matching_stable(match)
@@ -333,9 +332,9 @@ class Matching:
         else:
             return np.average(np.array(size))
 
-    def _is_matching_stable(self, match, pbar=None):
+    def _is_matching_stable(self, match):
         from algorithms.solution import Solution
         (stable, size) = Solution(self, match).is_stable()
         if stable:
             return match
-        return {}
+        return None
