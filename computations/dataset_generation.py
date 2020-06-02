@@ -7,10 +7,9 @@ from algorithms.storage import get_smti
 from computations.config import *
 
 
-def main_generation(generate=False):
-    if generate:
-        generate_smti_set(sizes_smti, samples_per_size_smti)
-        generate_smp_set(sizes_smp, samples_per_size_smp)
+def main_generation():
+    generate_smti_set(sizes_smti, samples_per_size_smti)
+    generate_smp_set(sizes_smp, samples_per_size_smp)
     plot_equidistribution_smti(sizes_smti, samples_per_size_smti)
 
 
