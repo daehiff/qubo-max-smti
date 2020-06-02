@@ -1,3 +1,4 @@
+import logging
 from copy import deepcopy
 
 from algorithms.solution import Solution
@@ -10,22 +11,31 @@ import algorithms.utils as ut
 import pandas as pd
 from computations.config import *
 
+log = logging.getLogger()
+
 
 def main_accuracy():
+    ut.init_log()
+    log.info("Starting Accurcay Measurement for SMTI")
+    log.info("Evaluating against other algorithms..")
     df_acc = pd.DataFrame()
     for size in sizes_smti:
         for index_f in range(samples_per_size_smti):
+            log.info(f"At: {size}, {index_f}")
             out = compute_accuracy_measurement(size, index_f)
             df_acc = df_acc.append(out, ignore_index=True)
 
     store_computation_result(df_acc, "accuracy_results")
+    log.info("DONE!")
+    log.info("Checking Energy")
 
     df_acc = pd.DataFrame()
     for size in sizes_smti:
         for index_f in range(samples_per_size_smti):
+            log.info(f"At: {size}, {index_f}")
             out = compute_qubo_en(size, index_f)
             df_acc = df_acc.append(out, ignore_index=True)
-
+    log.info("Done!")
     store_computation_result(df_acc, "qbsolv_en_results")
 
 
@@ -37,7 +47,9 @@ def eval_algorithm(size, index_f, solver_type):
         solutions = QUBO_SMTI(matching).solve_qa(verbose=False)
         store_qa_solution(solutions, size, index_f, "smti")
         min_solution = solutions[solutions.energy == solutions.energy.min()]
-        return Solution(matching, min_solution["match"][0]).is_stable()
+        log.info(solutions)
+        log.info(min_solution)
+        return Solution(matching, min_solution["match"].to_numpy()[0]).is_stable()
     elif solver_type == "lp":
         return LP_smti(matching).solve().is_stable()
     elif solver_type == "shiftbrk":
@@ -48,13 +60,13 @@ def eval_algorithm(size, index_f, solver_type):
         raise Exception(f"unknown solver_type: {solver_type}")
 
 
-def compute_accuracy_measurement(size, index_f):  # TODO test
+def compute_accuracy_measurement(size, index_f):
     solver_types = ["qbsolv", "qa", "lp", "shiftbrk", "kiraly"]
-    out = {}
+    out = {"size": size, "index_f": index_f}
     for solver_type in solver_types:
-        stable, size = eval_algorithm(size, index_f, solver_type)
+        stable, res_size = eval_algorithm(size, index_f, solver_type)
         out[f"{solver_type}_stable"] = stable
-        out[f"{solver_type}_size"] = size
+        out[f"{solver_type}_size"] = res_size
     return out
 
 
@@ -63,7 +75,7 @@ def compute_qubo_en(size, index_f):
     lp_en = compute_lp_energy(matching)
 
     qa_solution = get_solution_qa(size, index_f, "smti")
-    qa_en = min(qa_solution["energy"])  # todo find correct index
+    qa_en = min(qa_solution["energy"])
 
     solution = QUBO_SMTI(matching).solve()
     qbsolv_en = solution.energy

@@ -1,14 +1,18 @@
+import logging
 import timeit
 
 from algorithms.solver.SMTI.kiraly.kiralySMTI import Kirialy2
 from algorithms.solver.SMTI.lp_smti import LP_smti
 from algorithms.solver.SMTI.qubo_smti import QUBO_SMTI
 from algorithms.solver.SMTI.shift_brk.shift_brk import ShiftBrk
-from algorithms.storage import get_smti, store_computation_result, get_computation_result
+from algorithms.storage import get_smti, store_computation_result
 import numpy as np
 import pandas as pd
+import algorithms.utils as ut
 
 from computations.config import *
+
+log = logging.getLogger()
 
 
 def create_setup(size, index_f):
@@ -79,11 +83,11 @@ def measure_time_instance(size, index_f, times_repeat=10):
     for solver_type in solver_types:
         d_t, d_t_var = measure_solving(solver_type, setup, times_repeat=times_repeat)
         solution = eval_algorithm(get_smti(index_f=index_f, size=size), solver_type)
-        (stable, size) = solution.is_stable()
+        (stable, size_res) = solution.is_stable()
         result[f"{solver_type}_dt[s]"] = d_t
         result[f"{solver_type}_dt_var[%]"] = 100 * d_t_var / d_t
         result[f"{solver_type}_stable"] = stable
-        result[f"{solver_type}_size"] = size
+        result[f"{solver_type}_size"] = size_res
     return result
 
 
@@ -111,9 +115,13 @@ def measure_lp_qubo_preprocessing(size, index_f, times_repeat=10):
 
 
 def main_time_measure():
+    ut.init_log()
+    log.info(f"Starting Time Measurement")
     df_time = pd.DataFrame()
     for size in sizes_smti:
         for index_f in range(samples_per_size_smti):
+            log.info(f"At: {size}, {index_f}")
             out = measure_time_instance(size, index_f, times_repeat=10)
             df_time = df_time.append(out, ignore_index=True)
+    log.info("Done!")
     store_computation_result(df_time, "time_result")

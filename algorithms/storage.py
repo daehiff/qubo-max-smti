@@ -10,7 +10,7 @@ import pandas as pd
 base_dir = os.getenv('STORAGE', "./storage")
 
 
-def update_dir(dir_name: str, do_remove=True, do_replace=True):
+def update_dir(dir_name: str, do_remove=False, do_replace=True):
     """
     update the current directory
     :param dir_name:
@@ -137,7 +137,7 @@ def get_solution_qa(size: int, index_f: int, problem: str):
 
 def store_computation_result(result: pd.DataFrame, name: str):
     folder = get_compations_folder()
-    update_dir(folder)
+    update_dir(folder, do_replace=True, do_remove=False)
     result.to_pickle(f"{folder}/{name}.pkl")
 
 
