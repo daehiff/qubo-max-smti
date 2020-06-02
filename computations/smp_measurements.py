@@ -1,15 +1,15 @@
 from pprint import pprint
 
 import pandas as pd
-from algorithms.solution import Solution
 from algorithms.solver.SMTI.qubo_smti import QUBO_SMTI
-from algorithms.storage import get_smp, store_smp, store_qa_solution, get_solution_qa
-import numpy as np
+from algorithms.storage import get_smp, store_smp, store_qa_solution, get_solution_qa, store_computation_result
+
+from computations.config import *
 
 
 def generate_and_save_all_solutions():
-    for size in range(3, 10):
-        for index_f in range(10):
+    for size in sizes_smp:
+        for index_f in range(samples_per_size_smp):
             matching = get_smp(index_f, size)
             matching.compute_all_solutions(mode="SMP", m_processing=(size > 7))
             store_smp(matching, index_f)
@@ -24,7 +24,6 @@ def _count_unique_stable_matchings(solution_df, opt_en):
             matchings.append(matching)
             unique = unique.append(row, ignore_index=True)
     stable_matchings = unique.shape[0]
-    print(unique)
     unique = unique[unique.energy == opt_en]
     correct_energy = unique.shape[0]
     return stable_matchings, correct_energy
@@ -54,6 +53,10 @@ def compute_smp_results(size, index_f):
 def main_smp_measurements(generate_solutions=False):
     if generate_solutions:
         generate_and_save_all_solutions()
-    size = 4
-    index_f = 0
-    compute_smp_results(size, index_f)
+    df_smp = pd.DataFrame()
+    for size in sizes_smp:
+        for index_f in range(samples_per_size_smp):
+            out = compute_smp_results(size, index_f)
+            df_smp = df_smp.append(out, ignore_index=True)
+
+    store_computation_result(df_smp, "smp_result")

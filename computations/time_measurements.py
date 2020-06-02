@@ -4,8 +4,11 @@ from algorithms.solver.SMTI.kiraly.kiralySMTI import Kirialy2
 from algorithms.solver.SMTI.lp_smti import LP_smti
 from algorithms.solver.SMTI.qubo_smti import QUBO_SMTI
 from algorithms.solver.SMTI.shift_brk.shift_brk import ShiftBrk
-from algorithms.storage import get_smti
+from algorithms.storage import get_smti, store_computation_result, get_computation_result
 import numpy as np
+import pandas as pd
+
+from computations.config import *
 
 
 def create_setup(size, index_f):
@@ -108,7 +111,9 @@ def measure_lp_qubo_preprocessing(size, index_f, times_repeat=10):
 
 
 def main_time_measure():
-    print(measure_lp_qubo_preprocessing(3, 0, times_repeat=10))
-    # print(measure_time_instance(3, 0, times_repeat=50))
-    # print(measure_time_instance(3, 0, times_repeat=100))
-    # print(measure_time_instance(3, 0, times_repeat=200))
+    df_time = pd.DataFrame()
+    for size in sizes_smti:
+        for index_f in range(samples_per_size_smti):
+            out = measure_time_instance(size, index_f, times_repeat=10)
+            df_time = df_time.append(out, ignore_index=True)
+    store_computation_result(df_time, "time_result")

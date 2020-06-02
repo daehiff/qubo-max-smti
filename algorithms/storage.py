@@ -137,6 +137,7 @@ def get_solution_qa(size: int, index_f: int, problem: str):
 
 def store_computation_result(result: pd.DataFrame, name: str):
     folder = get_compations_folder()
+    update_dir(folder)
     result.to_pickle(f"{folder}/{name}.pkl")
 
 

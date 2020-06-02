@@ -11,10 +11,10 @@ if __name__ == '__main__':
         print(sys.argv)
         if sys.argv[1] == "-g":
             main_generation()
-        elif sys.argv[1] == "-t":
-            main_time_measure()
         elif sys.argv[1] == "-s":
-            main_accuracy()
+            # main_accuracy()
+            # main_smp_measurements()
+            main_time_measure()
         else:
             print("unspecified argument")
     else:
