@@ -6,7 +6,33 @@ from algorithms.storage import get_computation_result
 
 
 def plot_accuracy_main():
-    plot_accuracy_algorithms()
+    # plot_accuracy_algorithms()
+    # plot_smp_accuracy()
+    plot_qubo_qa_vs_lp()
+
+
+def plot_qubo_qa_vs_lp():
+    df = get_computation_result("qbsolv_en_results")
+    print(df)
+
+
+def plot_smp_accuracy():
+    df = get_computation_result("smp_result")
+    df["qa_opt_en"] = df["qa_opt_en"] / df["matching_count"]
+    df["qa_stable"] = df["qa_stable"] / df["matching_count"]
+    df["qbsolv_opt_en"] = df["qbsolv_opt_en"] / df["matching_count"]
+    df["qbsolv_stable"] = df["qbsolv_stable"] / df["matching_count"]
+    sizes = df["size"].unique()
+    df = df.groupby(["size"]).mean()
+    df["size"] = sizes
+
+    plt.plot(df["size"], 100 * df["qa_stable"])
+    plt.plot(df["size"], 100 * df["qbsolv_stable"])
+    plt.xticks(df["size"])
+    plt.ylabel('accuracy [%]')
+    plt.xlabel('problem size')
+    plt.legend()
+    plt.show()
 
 
 def plot_accuracy_algorithms():

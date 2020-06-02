@@ -11,7 +11,7 @@ import algorithms.utils as ut
 log = logging.getLogger()
 
 
-def main_smp_measurements(generate_solutions=False):
+def main_smp_measurements(generate_solutions=True):
     ut.init_log()
     log.info("Sarting SMP Evaluation")
     if generate_solutions:
@@ -34,6 +34,7 @@ def generate_and_save_all_solutions():
             matching = get_smp(index_f, size)
             matching.compute_all_solutions(mode="SMP", m_processing=(size > 7))
             store_smp(matching, index_f)
+    log.info("Done!")
 
 
 def _count_unique_stable_matchings(solution_df, opt_en):
@@ -71,4 +72,5 @@ def compute_smp_results(size, index_f):
     qa_unique_stable, qa_opt_en = _count_unique_stable_matchings(stable_solution_qa, opt_en)
     qbsolv_unique_stable, qbsolv_opt_en = _count_unique_stable_matchings(stable_solution_qbsolv, opt_en)
     return {"qa_stable": qa_unique_stable, "qa_opt_en": qa_opt_en,
-            "qbsolv_stable": qbsolv_unique_stable, "qbsolv_opt_en": qbsolv_opt_en}
+            "qbsolv_stable": qbsolv_unique_stable, "qbsolv_opt_en": qbsolv_opt_en,
+            "matching_count": len(matching.solutions), "size": size, "index_f": index_f}

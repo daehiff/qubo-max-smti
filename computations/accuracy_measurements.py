@@ -80,7 +80,7 @@ def compute_qubo_en(size, index_f):
     solution = QUBO_SMTI(matching).solve()
     qbsolv_en = solution.energy
 
-    return {"qa_en": qa_en, "lp_en": lp_en, "qbsolv_en": qbsolv_en}
+    return {"size": size, "index_f": index_f, "qa_en": qa_en, "lp_en": lp_en, "qbsolv_en": qbsolv_en}
 
 
 def compute_lp_energy(matching):
