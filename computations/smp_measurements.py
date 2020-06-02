@@ -36,10 +36,10 @@ def compute_smp_results(size, index_f):
     solver = QUBO_SMTI(matching).pre_process()
 
     solution_qa = solver.solve_qa(verbose=False, num_reads=100)
-    store_qa_solution(solution_qa.to_numpy(), size, index_f, "smp_qa")
+    store_qa_solution(solution_qa, size, index_f, "smp_qa")
 
     solution_qbsolv = solver.solve_multi()
-    store_qa_solution(solution_qbsolv.to_numpy(), size, index_f, "smp_qbsolv")
+    store_qa_solution(solution_qbsolv, size, index_f, "smp_qbsolv")
 
     stable_solution_qa = solution_qa[solution_qa.stable == 1.0]
     stable_solution_qbsolv = solution_qbsolv[solution_qbsolv.stable == 1.0]
@@ -49,11 +49,6 @@ def compute_smp_results(size, index_f):
     qbsolv_unique_stable, qbsolv_opt_en = _count_unique_stable_matchings(stable_solution_qbsolv, opt_en)
     return {"qa_stable": qa_unique_stable, "qa_opt_en": qa_opt_en,
             "qbsolv_stable": qbsolv_unique_stable, "qbsolv_opt_en": qbsolv_opt_en}
-
-
-def check_smp_results(size, index_f):
-    solution_qa = get_solution_qa(size, index_f, "smp_qa")
-    pprint(solution_qa)
 
 
 def main_smp_measurements(generate_solutions=False):

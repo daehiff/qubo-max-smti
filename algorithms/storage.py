@@ -5,9 +5,7 @@ import numpy as np
 
 from algorithms.maching import Matching
 import json
-import csv
-
-from algorithms.solution import Solution
+import pandas as pd
 
 base_dir = os.getenv('STORAGE', "./storage")
 
@@ -118,7 +116,7 @@ def get_smti(index_f: int, size: int) -> Matching:
     return matching
 
 
-def store_qa_solution(solution: list, size: int, index_f: int, problem: str):
+def store_qa_solution(solution: pd.DataFrame, size: int, index_f: int, problem: str):
     """
     Store the solution with metadata (energy ect.) into a .npy file
     :param solution:
@@ -129,12 +127,26 @@ def store_qa_solution(solution: list, size: int, index_f: int, problem: str):
     """
     solution_folder = get_solution_folder(size, problem=problem)
     update_dir(solution_folder, do_replace=True, do_remove=False)
-    np.save(f'{solution_folder}/solution_{index_f}.npy', np.array(solution))
+    solution.to_pickle(f'{solution_folder}/solution_{index_f}.pkl')
 
 
 def get_solution_qa(size: int, index_f: int, problem: str):
     solution_folder = get_solution_folder(size, problem=problem)
-    return np.load(f'{solution_folder}/solution_{index_f}.npy', allow_pickle=True)
+    return pd.read_pickle(f'{solution_folder}/solution_{index_f}.pkl')
+
+
+def store_computation_result(result: pd.DataFrame, name: str):
+    folder = get_compations_folder()
+    result.to_pickle(f"{folder}/{name}.pkl")
+
+
+def get_computation_result(name: str) -> pd.DataFrame:
+    folder = get_compations_folder()
+    return pd.read_pickle(f"{folder}/{name}.pkl")
+
+
+def get_compations_folder():
+    return f"{base_dir}/results/"
 
 
 def get_solution_folder(size: int, problem="smti"):

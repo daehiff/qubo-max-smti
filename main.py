@@ -1,6 +1,7 @@
 import sys
 
 # evaluations
+from computations.accuracy_measurements import main_accuracy
 from computations.dataset_generation import main_generation
 from computations.smp_measurements import main_smp_measurements
 from computations.time_measurements import main_time_measure
@@ -13,7 +14,7 @@ if __name__ == '__main__':
         elif sys.argv[1] == "-t":
             main_time_measure()
         elif sys.argv[1] == "-s":
-            main_smp_measurements()
+            main_accuracy()
         else:
             print("unspecified argument")
     else:
