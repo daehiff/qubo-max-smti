@@ -8,15 +8,12 @@ Git LFS (see: https://git-lfs.github.com/) needs to be installed.
 
 To install the dependencies: `pipenv install`
 
-To run the source code: `pipenv run python main.p`:
-```
--g generate a new dataset
-...
-```
+To run the source code: `pipenv run python main.p`
 
 ## Enviroment
 
 Enviroment variables:
 ```
-STORAGE=./storage -> set the root dir in order to store the data
+STORAGE=./storage # set the root dir in order to store the data
+TOKEN=DEV-... # dwave api token
 ```
