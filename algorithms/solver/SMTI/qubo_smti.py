@@ -36,7 +36,7 @@ class QUBO_SMTI:
 
         self.mode = mode
 
-        self.token = os.getenv('TOKEN', "./storage")
+        self.token = os.getenv('TOKEN', "")
 
     def create_encoding(self):
         encoding = {}

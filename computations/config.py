@@ -1,4 +1,4 @@
-sizes_smti = [i for i in range(3, 10)]
+sizes_smti = [i for i in range(3, 31)]
 
 samples_per_size_smti = 20
 

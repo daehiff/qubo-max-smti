@@ -13,7 +13,7 @@ from computations.config import *
 log = logging.getLogger()
 
 
-def main_accuracy():
+def main_accuracy(max_qubo_size=8):
     ut.init_log()
     log.info("Starting Accurcay Measurement for SMTI")
     log.info("Evaluating against other algorithms..")
@@ -21,7 +21,7 @@ def main_accuracy():
     for size in sizes_smti:
         for index_f in range(samples_per_size_smti):
             log.info(f"At: {size}, {index_f}")
-            out = compute_accuracy_measurement(size, index_f, use_qa=(size < 9))
+            out = compute_accuracy_measurement(size, index_f, use_qa=(size < max_qubo_size))
             df_acc = df_acc.append(out, ignore_index=True)
 
     store_computation_result(df_acc, "accuracy_results")
@@ -32,7 +32,7 @@ def main_accuracy():
     for size in sizes_smti:
         for index_f in range(samples_per_size_smti):
             log.info(f"At: {size}, {index_f}")
-            out = compute_qubo_en(size, index_f, use_qa=(size < 9))
+            out = compute_qubo_en(size, index_f, use_qa=(size < max_qubo_size))
             if out is not None:
                 df_acc = df_acc.append(out, ignore_index=True)
     log.info("Done!")

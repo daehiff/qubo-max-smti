@@ -4,9 +4,9 @@ from algorithms.storage import get_computation_result
 
 
 def plot_accuracy_main():
-    plot_accuracy_algorithms()
+    # plot_accuracy_algorithms()
     plot_smp_accuracy()
-    plot_qubo_qa_vs_lp()
+    # plot_qubo_qa_vs_lp()
 
 
 def plot_qubo_qa_vs_lp():

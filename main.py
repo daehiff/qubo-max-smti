@@ -21,7 +21,7 @@ if __name__ == '__main__':
             main_smp_measurements()
         elif sys.argv[1] == "-p":
             plot_accuracy_main()
-            plot_time_evaluation_main()
+            # plot_time_evaluation_main()
         else:
             print(f"unspecified argument: {sys.argv[1]}")
     else:
