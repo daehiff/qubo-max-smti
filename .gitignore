@@ -1,5 +1,6 @@
 # temporary added storage
 tests/storage/*
+nohup.out
 # IDEAS
 .DS_Store
 .idea/*
