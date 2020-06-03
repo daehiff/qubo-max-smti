@@ -1,6 +1,7 @@
 import logging
 from copy import deepcopy
 
+from algorithms.create_templates import create_smti_instance
 from algorithms.solution import Solution
 from algorithms.solver.SMTI.kiraly.kiralySMTI import Kirialy2
 from algorithms.solver.SMTI.lp_smti import LP_smti

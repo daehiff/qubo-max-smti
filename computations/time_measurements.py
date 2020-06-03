@@ -77,7 +77,7 @@ def measure_time_instance(size, index_f, times_repeat=10):
     :param times_repeat:
     :return:
     """
-    solver_types = ["qubo", "lp", "shiftbrk", "kiraly"]  # TODO zeit messung QA, ist das überhaupt sinvoll?
+    solver_types = ["qubo", "lp", "shiftbrk", "kiraly"]
     setup = create_setup(size, index_f)
     result = {"size": size, "index_f": index_f}
     for solver_type in solver_types:

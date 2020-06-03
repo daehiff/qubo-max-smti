@@ -13,6 +13,7 @@ from dwave.system import FixedEmbeddingComposite
 from dimod import qubo_to_ising
 from minorminer import minorminer
 import pandas as pd
+import dwave.inspector
 
 SOLVER = 'DW_2000Q_6'
 ENDPOINT = 'https://cloud.dwavesys.com/sapi'
@@ -170,7 +171,7 @@ class QUBO_SMTI:
             print(f"Solving SMTI with: {SOLVER}")
             print(f"Optimal Solution: {-(len(self.encoding) * self.p2 + self.matching.size * self.p1)}")
 
-        chain_strength = self.get_chain_stength()  # max element in qubo matrix
+        chain_strength = self.get_chain_stength() + 1  # max element in qubo matrix + epsilon
         solver_limit = len(self.encoding)  # solver_limit => size of qubo matrix
 
         G = nx.complete_graph(solver_limit)
@@ -183,7 +184,9 @@ class QUBO_SMTI:
             print(result)
             for index, (sample, energy, occ, chain) in enumerate(result.record):
                 match, valid = self.encode_qa(sample.tolist())
-                print(f"{index}: ", Solution(self.matching, match).is_stable(), match, valid)
+                size, stable = Solution(self.matching, match).is_stable()
+                opt_en = self.get_optimal_energy(size + 1)
+                print(f"{index}: ", match, size, stable, opt_en)
 
         samples = pd.DataFrame()  # colums=["match", "sample", "energy", "occ", "chain", "valid", "stable", "size"])
         for sample, energy, occ, chain in result.record:
