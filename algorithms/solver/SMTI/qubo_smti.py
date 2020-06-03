@@ -13,7 +13,6 @@ from dwave.system import FixedEmbeddingComposite
 from dimod import qubo_to_ising
 from minorminer import minorminer
 import pandas as pd
-import dwave.inspector
 
 SOLVER = 'DW_2000Q_6'
 ENDPOINT = 'https://cloud.dwavesys.com/sapi'
