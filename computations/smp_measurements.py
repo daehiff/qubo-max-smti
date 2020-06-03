@@ -17,13 +17,20 @@ def main_smp_measurements(generate_solutions=True):
     if generate_solutions:
         generate_and_save_all_solutions()
     df_smp = pd.DataFrame()
-    for size in sizes_smp:
+    for size in sizes_smp_qa:
         for index_f in range(samples_per_size_smp):
             log.info(f"At: {size}, {index_f}")
             out = compute_smp_results(size, index_f)
             df_smp = df_smp.append(out, ignore_index=True)
-
     store_computation_result(df_smp, "smp_result")
+
+    df_smp = pd.DataFrame()
+    for size in sizes_smp:
+        for index_f in range(samples_per_size_smp):
+            log.info(f"At: {size}, {index_f}")
+            out = compute_smp_results_qbsolv(size, index_f)
+            df_smp = df_smp.append(out, ignore_index=True)
+    store_computation_result(df_smp, "smp_result_qbsolvpure")
 
 
 def generate_and_save_all_solutions():
@@ -52,6 +59,20 @@ def _count_unique_stable_matchings(solution_df, opt_en):
     else:
         correct_energy = 0  # zero times correct en
     return stable_matchings, correct_energy
+
+
+def compute_smp_results_qbsolv(size, index_f):
+    matching = get_smp(index_f, size)
+    solver = QUBO_SMTI(matching).pre_process()
+    solution = solver.solve()
+    stable, size_match = solution.is_stable()
+    solution_qbsolv = solver.solve_multi()
+    stable_solution_qbsolv = solution_qbsolv[solution_qbsolv.stable == 1.0]
+    opt_en = solver.get_optimal_energy(matching.size)
+    qbsolv_unique_stable, qbsolv_opt_en = _count_unique_stable_matchings(stable_solution_qbsolv, opt_en)
+    return {"qbsolv_stable": qbsolv_unique_stable, "qbsolv_opt_en": qbsolv_opt_en,
+            "stable": stable, "size_match": size_match,
+            "size": size, "index_f": index_f}
 
 
 def compute_smp_results(size, index_f):
