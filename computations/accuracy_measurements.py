@@ -1,7 +1,5 @@
 import logging
-from copy import deepcopy
 
-from algorithms.create_templates import create_smti_instance
 from algorithms.solution import Solution
 from algorithms.solver.SMTI.kiraly.kiralySMTI import Kirialy2
 from algorithms.solver.SMTI.lp_smti import LP_smti
@@ -23,7 +21,7 @@ def main_accuracy():
     for size in sizes_smti:
         for index_f in range(samples_per_size_smti):
             log.info(f"At: {size}, {index_f}")
-            out = compute_accuracy_measurement(size, index_f)
+            out = compute_accuracy_measurement(size, index_f, use_qa=(size < 9))
             df_acc = df_acc.append(out, ignore_index=True)
 
     store_computation_result(df_acc, "accuracy_results")
@@ -34,8 +32,9 @@ def main_accuracy():
     for size in sizes_smti:
         for index_f in range(samples_per_size_smti):
             log.info(f"At: {size}, {index_f}")
-            out = compute_qubo_en(size, index_f)
-            df_acc = df_acc.append(out, ignore_index=True)
+            out = compute_qubo_en(size, index_f, use_qa=(size < 9))
+            if out is not None:
+                df_acc = df_acc.append(out, ignore_index=True)
     log.info("Done!")
     store_computation_result(df_acc, "qbsolv_en_results")
 
@@ -61,17 +60,22 @@ def eval_algorithm(size, index_f, solver_type):
         raise Exception(f"unknown solver_type: {solver_type}")
 
 
-def compute_accuracy_measurement(size, index_f):
+def compute_accuracy_measurement(size, index_f, use_qa=False):
     solver_types = ["qbsolv", "qa", "lp", "shiftbrk", "kiraly"]
     out = {"size": size, "index_f": index_f}
     for solver_type in solver_types:
+        if solver_type == "qa" and not use_qa:
+            continue
         stable, res_size = eval_algorithm(size, index_f, solver_type)
         out[f"{solver_type}_stable"] = stable
         out[f"{solver_type}_size"] = res_size
+
     return out
 
 
-def compute_qubo_en(size, index_f):
+def compute_qubo_en(size, index_f, use_qa=False):
+    if not use_qa:
+        return None
     matching = get_smti(index_f, size)
     lp_en = compute_lp_energy(matching)
 

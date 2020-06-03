@@ -1,19 +1,16 @@
 import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
 
 from algorithms.storage import get_computation_result
 
 
 def plot_accuracy_main():
-    # plot_accuracy_algorithms()
-    # plot_smp_accuracy()
+    plot_accuracy_algorithms()
+    plot_smp_accuracy()
     plot_qubo_qa_vs_lp()
 
 
 def plot_qubo_qa_vs_lp():
-    df = get_computation_result("qbsolv_en_results")
-    print(df)
+    pass
 
 
 def plot_smp_accuracy():
@@ -26,8 +23,8 @@ def plot_smp_accuracy():
     df = df.groupby(["size"]).mean()
     df["size"] = sizes
 
-    plt.plot(df["size"], 100 * df["qa_stable"])
-    plt.plot(df["size"], 100 * df["qbsolv_stable"])
+    plt.plot(df["size"], 100 * df["qa_stable"], label="qa")
+    plt.plot(df["size"], 100 * df["qbsolv_stable"], label="qbsolv")
     plt.xticks(df["size"])
     plt.ylabel('accuracy [%]')
     plt.xlabel('problem size')
@@ -37,7 +34,6 @@ def plot_smp_accuracy():
 
 def plot_accuracy_algorithms():
     solver_types = ["qbsolv", "qa", "shiftbrk", "kiraly"]
-
     df = get_computation_result("accuracy_results")
     df["qa_size"] = list(map(lambda x: 0 if x == -1 else x, df["qa_size"]))
     df["qbsolv_size"] = list(map(lambda x: 0 if x == -1 else x, df["qbsolv_size"]))
@@ -52,7 +48,7 @@ def plot_accuracy_algorithms():
     df["size"] = sizes
 
     plt.plot(df["size"], 100 * df["qbsolv_size"], label="QUBO-MAX-SMTI (qbsolv)")
-    plt.plot(df["size"], 100 * df["qa_size"], label="QUBO-MAX-SMTI (qbsolv)")
+    plt.plot(df["size"], 100 * df["qa_size"], label="QUBO-MAX-SMTI (qa)")
     plt.plot(df["size"], 100 * df["shiftbrk_size"], label="SHIFTBRK")
     plt.plot(df["size"], 100 * df["kiraly_size"], label="Krialy2")
     plt.xticks(df["size"])
