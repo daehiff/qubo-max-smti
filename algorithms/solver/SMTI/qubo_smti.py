@@ -183,10 +183,9 @@ class QUBO_SMTI:
         if verbose:
             print(result)
             for index, (sample, energy, occ, chain) in enumerate(result.record):
-                match, valid = self.encode_qa(sample.tolist())
-                size, stable = Solution(self.matching, match).is_stable()
-                opt_en = self.get_optimal_energy(size + 1)
-                print(f"{index}: ", match, size, stable, opt_en)
+                match_, _ = self.encode_qa(sample.tolist())
+                stable_, size_ = Solution(self.matching, match_).is_stable()
+                print(f"{index}: ", match_, size_, stable_)
 
         samples = pd.DataFrame()  # colums=["match", "sample", "energy", "occ", "chain", "valid", "stable", "size"])
         for sample, energy, occ, chain in result.record:
@@ -257,7 +256,7 @@ class QUBO_SMTI:
                 match, valid = self.encode(sample)
                 print(index, ":", Solution(self.matching, match).is_stable(), match, valid)
 
-        samples = pd.DataFrame()  # colums=["match", "sample", "energy", "occ", "chain", "valid", "stable", "size"])
+        samples = pd.DataFrame()
         for sample, energy, occ in response.record:
             match, valid = self.encode_qa(sample.tolist())
             stable, size = Solution(self.matching, match).is_stable()
