@@ -1,9 +1,16 @@
 import collections
 import itertools
+import multiprocessing
 import operator
 from copy import deepcopy
+from functools import partial
+
+import math
+
 import algorithms.utils as ut
 import numpy as np
+from multiprocessing import Pool
+import tqdm
 
 
 class Matching:
@@ -253,7 +260,7 @@ class Matching:
             tie_lenght.append(tie_len)
         return tie_lenght
 
-    def compute_all_solutions(self, mode="SMTI"):
+    def compute_all_solutions(self, mode="SMTI", m_processing=True):
         from algorithms.solution import Solution
         if mode == "SMTI":
             all_matches = ut.get_all_matches(self.males, self.females, self.size, mode="SMTI")
@@ -267,10 +274,16 @@ class Matching:
         elif mode == "SMP":
             all_comb = ut.get_all_matches(self.males, self.females, self.size, mode="SMP")
             all_solutions = []
-            for match in all_comb:
-                (stable, size) = Solution(self, match).is_stable()
-                if stable:
-                    all_solutions.append(match)
+            if m_processing:
+                p = Pool(multiprocessing.cpu_count())
+                s_upper = math.factorial(self.size)
+                all_solutions = p.imap_unordered(self._is_matching_stable, all_comb, chunksize=1000)
+                all_solutions = list(filter(lambda x: x is not None, tqdm.tqdm(all_solutions, total=s_upper)))
+            else:
+                for match in all_comb:
+                    tmp = self._is_matching_stable(match)
+                    if tmp is not None:
+                        all_solutions.append(tmp)
             self.solutions = all_solutions
 
         else:
@@ -294,14 +307,34 @@ class Matching:
             for (_, idx) in self.get_preference_list(male).items():
                 if not prev_idx == idx:
                     if current_size > 0:
-                        size.append(current_size)
+                        size.append(current_size + 1)
+                        current_size = 0
                     prev_idx = idx
+                else:
+                    current_size += 1
+            if current_size != 0:
+                size.append(current_size + 1)
         for female in self.females:
             current_size = 0
             prev_idx = -1
             for (_, idx) in self.get_preference_list(female).items():
                 if not prev_idx == idx:
                     if current_size > 0:
-                        size.append(current_size)
+                        size.append(current_size + 1)
+                        current_size = 0
                     prev_idx = idx
-        return np.average(np.array(size))
+                else:
+                    current_size += 1
+            if current_size != 0:
+                size.append(current_size + 1)
+        if len(size) == 0:
+            return 1
+        else:
+            return np.average(np.array(size))
+
+    def _is_matching_stable(self, match):
+        from algorithms.solution import Solution
+        (stable, size) = Solution(self, match).is_stable()
+        if stable:
+            return match
+        return None

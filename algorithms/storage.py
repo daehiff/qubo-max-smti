@@ -1,22 +1,16 @@
 import os
 import shutil
 import algorithms.utils as ut
+import numpy as np
 
 from algorithms.maching import Matching
 import json
-import csv
-
-from algorithms.solution import Solution
+import pandas as pd
 
 base_dir = os.getenv('STORAGE', "./storage")
 
 
-def init(base_directory: str):
-    global base_dir
-    base_dir = base_directory
-
-
-def update_dir(dir_name: str, do_remove=True, do_replace=True):
+def update_dir(dir_name: str, do_remove=False, do_replace=True):
     """
     update the current directory
     :param dir_name:
@@ -120,6 +114,44 @@ def get_smti(index_f: int, size: int) -> Matching:
                             solutions=meta["possible_solutions"], meta=meta["meta"])
     assert matching is not None
     return matching
+
+
+def store_qa_solution(solution: pd.DataFrame, size: int, index_f: int, problem: str):
+    """
+    Store the solution with metadata (energy ect.) into a .npy file
+    :param solution:
+    :param size:
+    :param index_f:
+    :param problem:
+    :return:
+    """
+    solution_folder = get_solution_folder(size, problem=problem)
+    update_dir(solution_folder, do_replace=True, do_remove=False)
+    solution.to_pickle(f'{solution_folder}/solution_{index_f}.pkl')
+
+
+def get_solution_qa(size: int, index_f: int, problem: str):
+    solution_folder = get_solution_folder(size, problem=problem)
+    return pd.read_pickle(f'{solution_folder}/solution_{index_f}.pkl')
+
+
+def store_computation_result(result: pd.DataFrame, name: str):
+    folder = get_compations_folder()
+    update_dir(folder, do_replace=True, do_remove=False)
+    result.to_pickle(f"{folder}/{name}.pkl")
+
+
+def get_computation_result(name: str) -> pd.DataFrame:
+    folder = get_compations_folder()
+    return pd.read_pickle(f"{folder}/{name}.pkl")
+
+
+def get_compations_folder():
+    return f"{base_dir}/results/"
+
+
+def get_solution_folder(size: int, problem="smti"):
+    return f"{base_dir}/solutions/{problem}/size_{size}"
 
 
 def get_smti_folder(size: int):
