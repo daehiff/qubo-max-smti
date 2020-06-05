@@ -179,6 +179,7 @@ class QUBO_SMTI:
         fixed_embedding = FixedEmbeddingComposite(dw_solver, embedding)
         result = fixed_embedding.sample(self.qubo, num_reads=num_reads, chain_strength=chain_strength)
 
+        dw_solver.client.close()  # clean up all the thread mess the client creates so it does not block my code
         if verbose:
             print(result)
             for index, (sample, energy, occ, chain) in enumerate(result.record):
@@ -186,7 +187,7 @@ class QUBO_SMTI:
                 stable_, size_ = Solution(self.matching, match_).is_stable()
                 print(f"{index}: ", match_, size_, stable_)
 
-        samples = pd.DataFrame()  # colums=["match", "sample", "energy", "occ", "chain", "valid", "stable", "size"])
+        samples = pd.DataFrame()
         for sample, energy, occ, chain in result.record:
             match, valid = self.encode_qa(sample.tolist())
             stable, size = Solution(self.matching, match).is_stable()
