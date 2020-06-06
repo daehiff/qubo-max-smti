@@ -1,5 +1,5 @@
 import sys
-
+import os
 # evaluations
 from computations.accuracy_measurements import main_accuracy
 from computations.dataset_generation import main_generation
@@ -22,6 +22,8 @@ if __name__ == '__main__':
         elif sys.argv[1] == "-p":
             plot_accuracy_main()
             # plot_time_evaluation_main()
+        elif sys.argv[1] == "-t":
+            print(os.getenv('TOKEN', ""))
         else:
             print(f"unspecified argument: {sys.argv[1]}")
     else:
