@@ -6,6 +6,7 @@ import numpy as np
 from algorithms.maching import Matching
 import json
 import pandas as pd
+import matplotlib.pyplot as plt
 
 base_dir = os.getenv('STORAGE', "./storage")
 
@@ -168,3 +169,13 @@ def get_smp_folder(size: int):
     """
     dir_name = f"{base_dir}/samples/smp/size_{size}"
     return dir_name
+
+
+def show_store_plot(name: str, show=False):
+    if show:
+        plt.show()
+    else:
+        dir = f"{base_dir}/path"
+
+        plt.savefig(f"{dir}/{name}")
+        plt.clf()

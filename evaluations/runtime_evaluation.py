@@ -1,4 +1,4 @@
-from algorithms.storage import get_computation_result
+from algorithms.storage import get_computation_result, show_store_plot
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -27,8 +27,8 @@ def compare_runtime_algorithms():
     plt.plot(sizes, mean_lp, label="MAX-SMTI-LP")
     plt.plot(sizes, mean_shiftbrk, label="SHIFTBRK")
     plt.plot(sizes, mean_kirialy, label="Krialy2")
-    plt.xticks(sizes)
+    # plt.xticks(sizes)
     plt.ylabel('time [ms]')
     plt.xlabel('problem size')
     plt.legend()
-    plt.show()
+    show_store_plot("runtime.png")

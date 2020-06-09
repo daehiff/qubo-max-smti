@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 from algorithms.solver.SMTI.qubo_smti import QUBO_SMTI
-from algorithms.storage import get_computation_result, get_smti
+from algorithms.storage import get_computation_result, get_smti, show_store_plot
 
 
 def plot_accuracy_main():
@@ -10,20 +10,20 @@ def plot_accuracy_main():
     plot_qubo_qa_vs_lp()
 
 
-def _barplot_en_results(qbsolv_results, sizes):
+def _barplot_en_results(qbsolv_results, sizes, solver_t="qa"):
     width = 0.5
     fig, ax = plt.subplots()
     lp_worse = [100 * qbsolv_results[size]["lw"] / 50.0 for size in sizes]
     lp_equal = [100 * qbsolv_results[size]["eq"] / 50.0 for size in sizes]
     lp_better = [100 * qbsolv_results[size]["lb"] / 50.0 for size in sizes]
-    ax.bar(sizes, lp_worse, width, label="qa en is better")
+    ax.bar(sizes, lp_worse, width, label=f"{solver_t} en is better")
     ax.bar(sizes, lp_equal, bottom=lp_worse, width=width, label="correct solution")
     ax.bar(sizes, lp_better, bottom=lp_equal, width=width, label="lp en is better")
 
     plt.xlabel("problem size")
     plt.ylabel("portion of a instance [%]")
     plt.legend()
-    plt.show()
+    show_store_plot(f"{solver_t}.png")
 
 
 def plot_qubo_qa_vs_lp():
@@ -33,9 +33,6 @@ def plot_qubo_qa_vs_lp():
     qa_results = {size: {"eq": 0, "lb": 0, "lw": 0} for size in sizes}
     qbsolv_results = {size: {"eq": 0, "lb": 0, "lw": 0} for size in sizes}
     for index, row in df.iterrows():
-        matching = get_smti(int(row["index_f"]), int(row["size"]))
-        solver_q = QUBO_SMTI(matching).pre_process()
-
         # more negative energy is better
         size = row["size"]
         if row["lp_en"] < row["qa_en"]:
@@ -45,7 +42,15 @@ def plot_qubo_qa_vs_lp():
         else:
             qa_results[size]["eq"] += 1
 
-    _barplot_en_results(qa_results, sizes)
+        if row["lp_en"] < row["qbsolv_en"]:
+            qbsolv_results[size]["lb"] += 1
+        elif row["lp_en"] > row["qbsolv_en"]:
+            qbsolv_results[size]["lw"] += 1
+        else:
+            qbsolv_results[size]["eq"] += 1
+
+    _barplot_en_results(qbsolv_results, sizes, solver_t="qbsolv")
+    _barplot_en_results(qa_results, sizes[:5], solver_t="qa")
 
 
 def plot_smp_accuracy():
@@ -65,7 +70,7 @@ def plot_smp_accuracy():
     plt.ylabel('accuracy [%]')
     plt.xlabel('problem size')
     plt.legend()
-    plt.show()
+    show_store_plot("smp_accuracy.png")
 
 
 def plot_accuracy_algorithms():
@@ -85,11 +90,11 @@ def plot_accuracy_algorithms():
     results = {k: list(map(lambda x: x / 50.0, v)) for k, v in results.items()}
     plt.title("Accuracy of approximation algorithms vs QA vs qbsolv")
     plt.plot(sizes, results["qbsolv"], label="QUBO-MAX-SMTI (qbsolv)")
-    plt.plot(sizes, results["qa"], label="QUBO-MAX-SMTI (qa)")
+    plt.plot(sizes[:5], results["qa"][:5], label="QUBO-MAX-SMTI (qa)")
     plt.plot(sizes, results["shiftbrk"], label="SHIFTBRK")
     plt.plot(sizes, results["kiraly"], label="Krialy2")
     # plt.xticks(sizes)
     plt.ylabel('accuracy [%]')
     plt.xlabel('problem size')
     plt.legend()
-    plt.show()
+    show_store_plot("accuracy_qbsolv_vs_apx.png")
