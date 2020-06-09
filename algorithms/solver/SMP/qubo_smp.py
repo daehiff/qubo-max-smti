@@ -54,6 +54,7 @@ class QbsolvSMP:
                         self.__assign_qubo(j, i, self.p2)
                     elif prefs_w_j:
                         self.__assign_qubo(j, i, self.p2)
+        return self
 
     def solve(self, verbose=False, num_repeats=100, target=None):
         if self.qubo is None:

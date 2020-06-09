@@ -53,11 +53,11 @@ def plot_accuracy_algorithms():
     results = {k: list(v.values()) for k, v in results.items()}
     results = {k: list(map(lambda x: x / 50.0, v)) for k, v in results.items()}
     print(results)
-    plt.plot(results["qbsolv"], label="QUBO-MAX-SMTI (qbsolv)")
-    # plt.plot(results["qa"], label="QUBO-MAX-SMTI (qa)")
-    plt.plot(results["shiftbrk"], label="SHIFTBRK")
-    plt.plot(results["kiraly"], label="Krialy2")
-    # plt.xticks(sizes)
+    plt.plot(sizes,results["qbsolv"], label="QUBO-MAX-SMTI (qbsolv)")
+    plt.plot(sizes,results["qa"], label="QUBO-MAX-SMTI (qa)")
+    plt.plot(sizes,results["shiftbrk"], label="SHIFTBRK")
+    plt.plot(sizes,results["kiraly"], label="Krialy2")
+    plt.xticks(sizes)
     plt.ylabel('accuracy [%]')
     plt.xlabel('problem size')
     plt.legend()

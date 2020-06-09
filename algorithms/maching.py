@@ -260,7 +260,7 @@ class Matching:
             tie_lenght.append(tie_len)
         return tie_lenght
 
-    def compute_all_solutions(self, mode="SMTI", m_processing=True):
+    def compute_all_solutions(self, mode="SMTI", m_processing=True, verbose=True):
         from algorithms.solution import Solution
         if mode == "SMTI":
             all_matches = ut.get_all_matches(self.males, self.females, self.size, mode="SMTI")
@@ -278,7 +278,10 @@ class Matching:
                 p = Pool(multiprocessing.cpu_count())
                 s_upper = math.factorial(self.size)
                 all_solutions = p.imap_unordered(self._is_matching_stable, all_comb, chunksize=1000)
-                all_solutions = list(filter(lambda x: x is not None, tqdm.tqdm(all_solutions, total=s_upper)))
+                if verbose:
+                    all_solutions = list(filter(lambda x: x is not None, tqdm.tqdm(all_solutions, total=s_upper)))
+                else:
+                    all_solutions = list(filter(lambda x: x is not None, all_solutions))
             else:
                 for match in all_comb:
                     tmp = self._is_matching_stable(match)
