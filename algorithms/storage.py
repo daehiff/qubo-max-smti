@@ -175,7 +175,7 @@ def show_store_plot(name: str, show=False):
     if show:
         plt.show()
     else:
-        dir = f"{base_dir}/path"
-
+        dir = f"{base_dir}/plots"
+        update_dir(dir, do_replace=True, do_remove=False)
         plt.savefig(f"{dir}/{name}")
         plt.clf()
