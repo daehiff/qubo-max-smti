@@ -1,17 +1,51 @@
 import matplotlib.pyplot as plt
 
-from algorithms.storage import get_computation_result
+from algorithms.solver.SMTI.qubo_smti import QUBO_SMTI
+from algorithms.storage import get_computation_result, get_smti
 
 
 def plot_accuracy_main():
-    #plot_accuracy_algorithms()
-    #plot_smp_accuracy()
+    plot_accuracy_algorithms()
+    plot_smp_accuracy()
     plot_qubo_qa_vs_lp()
 
 
+def _barplot_en_results(qbsolv_results, sizes):
+    width = 0.5
+    fig, ax = plt.subplots()
+    lp_worse = [100 * qbsolv_results[size]["lw"] / 50.0 for size in sizes]
+    lp_equal = [100 * qbsolv_results[size]["eq"] / 50.0 for size in sizes]
+    lp_better = [100 * qbsolv_results[size]["lb"] / 50.0 for size in sizes]
+    ax.bar(sizes, lp_worse, width, label="qa en is better")
+    ax.bar(sizes, lp_equal, bottom=lp_worse, width=width, label="correct solution")
+    ax.bar(sizes, lp_better, bottom=lp_equal, width=width, label="lp en is better")
+
+    plt.xlabel("problem size")
+    plt.ylabel("portion of a instance [%]")
+    plt.legend()
+    plt.show()
+
+
 def plot_qubo_qa_vs_lp():
+    solvers = ["lp", "qa", "qbsolv"]
     df = get_computation_result("qbsolv_en_results")
-    print(df)
+    sizes = df["size"].unique()
+    qa_results = {size: {"eq": 0, "lb": 0, "lw": 0} for size in sizes}
+    qbsolv_results = {size: {"eq": 0, "lb": 0, "lw": 0} for size in sizes}
+    for index, row in df.iterrows():
+        matching = get_smti(int(row["index_f"]), int(row["size"]))
+        solver_q = QUBO_SMTI(matching).pre_process()
+
+        # more negative energy is better
+        size = row["size"]
+        if row["lp_en"] < row["qa_en"]:
+            qa_results[size]["lb"] += 1
+        elif row["lp_en"] > row["qa_en"]:
+            qa_results[size]["lw"] += 1
+        else:
+            qa_results[size]["eq"] += 1
+
+    _barplot_en_results(qa_results, sizes)
 
 
 def plot_smp_accuracy():
@@ -24,6 +58,7 @@ def plot_smp_accuracy():
     df = df.groupby(["size"]).mean()
     df["size"] = sizes
 
+    plt.title("Acurracy for SMP")
     plt.plot(df["size"], 100 * df["qa_stable"], label="qa")
     plt.plot(df["size"], 100 * df["qbsolv_stable"], label="qbsolv")
     plt.xticks(df["size"])
@@ -34,11 +69,6 @@ def plot_smp_accuracy():
 
 
 def plot_accuracy_algorithms():
-    def filter_unique_columns(data):
-        out = {solver_t: 0 for solver_t in solver_types}
-        print(data)
-        return (out)
-
     solver_types = ["qbsolv", "shiftbrk", "kiraly", "qa"]
     df = get_computation_result("accuracy_results")
     df["qa_size"] = list(map(lambda x: 0 if x == -1 else x, df["qa_size"]))
@@ -53,11 +83,11 @@ def plot_accuracy_algorithms():
                 results[solver_type][size] = results[solver_type][size] + 1
     results = {k: list(v.values()) for k, v in results.items()}
     results = {k: list(map(lambda x: x / 50.0, v)) for k, v in results.items()}
-    print(results)
-    plt.plot(results["qbsolv"], label="QUBO-MAX-SMTI (qbsolv)")
-    # plt.plot(results["qa"], label="QUBO-MAX-SMTI (qa)")
-    plt.plot(results["shiftbrk"], label="SHIFTBRK")
-    plt.plot(results["kiraly"], label="Krialy2")
+    plt.title("Accuracy of approximation algorithms vs QA vs qbsolv")
+    plt.plot(sizes, results["qbsolv"], label="QUBO-MAX-SMTI (qbsolv)")
+    plt.plot(sizes, results["qa"], label="QUBO-MAX-SMTI (qa)")
+    plt.plot(sizes, results["shiftbrk"], label="SHIFTBRK")
+    plt.plot(sizes, results["kiraly"], label="Krialy2")
     # plt.xticks(sizes)
     plt.ylabel('accuracy [%]')
     plt.xlabel('problem size')
