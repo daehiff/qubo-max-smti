@@ -11,8 +11,8 @@ from algorithms.storage import get_smp
 
 
 def test_main():
-    for _ in range(100):
-        run_size(4)
+    # for _ in range(100):
+    run_size(4)
 
 
 def check_soltution(to_check, ground_truth):
@@ -31,27 +31,27 @@ def check_soltution(to_check, ground_truth):
 
 def run_size(size):
     # uid = 101
-    # matching = create_and_save_smp(uid, size)
-    # matching = get_smp(uid, size)
     matching = create_smp_instance(size)
 
-    solutions_b = (BACKTRACK_SMP(matching).solve())
-    solutions_b = list(map(lambda x: x.solution_m, solutions_b))
+    start = time.time()
+    solutions_b = BACKTRACK_SMP(matching).solve()
+    end = time.time()
 
-    solutions_mv = MCVITIE(matching).solve()
-    solutions_mv = list(filter(lambda x: len(x) == size, solutions_mv))
-    print(solutions_b)
-    print(solutions_mv)
-    print("B, male: ", list(map(lambda x: Solution(matching, x).get_male_loss(), solutions_b)))
-    print("B, female: ", list(map(lambda x: Solution(matching, x).get_female_loss(), solutions_b)))
-    print("MV, male: ", list(map(lambda x: Solution(matching, x).get_male_loss(), solutions_mv)))
-    print("MV, female: ", list(map(lambda x: Solution(matching, x).get_female_loss(), solutions_mv)))
+    b_elapsed = end - start
+
+    start = time.time()
+    solutions_q = QUBO_SMTI(matching).solve_multi()
+    solutions_q = solutions_q[solutions_q.stable == True]
+    end = time.time()
+    q_elapsed = end - start
+
+    print("All stable: ")
+    print(all(list(map(lambda x: x.is_stable()[0], solutions_b))))
+    print(all(list(map(lambda x: bool(x), solutions_q["stable"]))))
+    print("Time: ")
+    print(b_elapsed)
+    print(q_elapsed)
+    print("Solution Count")
+    print(len(solutions_b))
+    print(len(solutions_q))
     print()
-    assert all(list(map(lambda x: Solution(matching, x).is_stable()[0], solutions_mv)))
-    assert all(list(map(lambda x: Solution(matching, x).is_stable()[0], solutions_b)))
-
-    # print(StandardSMP(matching).solve().solution_m)
-    # print(solutions_mv[0])
-    assert (len(solutions_mv) == len(solutions_b))
-    # check_soltution(solutions_b, solutions_mv)
-    # check_soltution(solutions_mv, solutions_b)
