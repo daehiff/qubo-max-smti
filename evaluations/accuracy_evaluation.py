@@ -13,17 +13,19 @@ def plot_accuracy_main():
 def _barplot_en_results(qbsolv_results, sizes, solver_t="qa"):
     width = 0.5
     fig, ax = plt.subplots()
+
     lp_worse = [100 * qbsolv_results[size]["lw"] / 50.0 for size in sizes]
     lp_equal = [100 * qbsolv_results[size]["eq"] / 50.0 for size in sizes]
     lp_better = [100 * qbsolv_results[size]["lb"] / 50.0 for size in sizes]
-    ax.bar(sizes, lp_worse, width, label=f"{solver_t} en is better")
-    ax.bar(sizes, lp_equal, bottom=lp_worse, width=width, label="correct solution")
+    assert all([x == 0.0 for x in lp_worse])
+    # ax.bar(sizes, lp_worse, width, label=f"{solver_t} en is better")
+    ax.bar(sizes, lp_equal, width=width, label="correct solution")
     ax.bar(sizes, lp_better, bottom=lp_equal, width=width, label="lp en is better")
 
     plt.xlabel("problem size")
     plt.ylabel("portion of a instance [%]")
     plt.legend()
-    show_store_plot(f"{solver_t}.png")
+    show_store_plot(f"{solver_t}")
 
 
 def plot_qubo_qa_vs_lp():
@@ -55,6 +57,7 @@ def plot_qubo_qa_vs_lp():
 
 def plot_smp_accuracy():
     df = get_computation_result("smp_result")
+    print(df)
     df["qa_opt_en"] = df["qa_opt_en"] / df["matching_count"]
     df["qa_stable"] = df["qa_stable"] / df["matching_count"]
     df["qbsolv_opt_en"] = df["qbsolv_opt_en"] / df["matching_count"]
@@ -64,13 +67,15 @@ def plot_smp_accuracy():
     df["size"] = sizes
 
     plt.title("Acurracy for SMP")
-    plt.plot(df["size"], 100 * df["qa_stable"], label="qa")
-    plt.plot(df["size"], 100 * df["qbsolv_stable"], label="qbsolv")
+    print(df)
+    width = 0.3
+    plt.bar(df["size"] - width / 2, 100 * df["qa_stable"], label="qa", width=width, align="center")
+    plt.bar(df["size"] + width / 2, 100 * df["qbsolv_stable"], label="qbsolv", width=width, align="center")
     plt.xticks(df["size"])
     plt.ylabel('accuracy [%]')
     plt.xlabel('problem size')
     plt.legend()
-    show_store_plot("smp_accuracy.png")
+    show_store_plot("smp_accuracy")
 
 
 def plot_accuracy_algorithms():
@@ -97,4 +102,4 @@ def plot_accuracy_algorithms():
     plt.ylabel('accuracy [%]')
     plt.xlabel('problem size')
     plt.legend()
-    show_store_plot("accuracy_qbsolv_vs_apx.png")
+    show_store_plot("accuracy_qbsolv_vs_apx")
