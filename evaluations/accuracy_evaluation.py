@@ -19,13 +19,14 @@ def _barplot_en_results(qbsolv_results, sizes, solver_t="qa"):
     lp_better = [100 * qbsolv_results[size]["lb"] / 50.0 for size in sizes]
     assert all([x == 0.0 for x in lp_worse])
     # ax.bar(sizes, lp_worse, width, label=f"{solver_t} en is better")
-    ax.bar(sizes, lp_equal, width=width, label="correct solution")
-    ax.bar(sizes, lp_better, bottom=lp_equal, width=width, label="lp en is better")
+    ax.bar(sizes, lp_equal, width=width, label="correct solutions found by the quantum annealer")
+    ax.bar(sizes, lp_better, bottom=lp_equal, width=width, label="lp-energy was better")
 
     plt.xlabel("problem size")
     plt.ylabel("portion of a instance [%]")
     plt.legend()
-    show_store_plot(f"{solver_t}")
+    # plt.title(f"Energy Comparison")
+    show_store_plot(f"{solver_t}", show=True)
 
 
 def plot_qubo_qa_vs_lp():
@@ -57,7 +58,6 @@ def plot_qubo_qa_vs_lp():
 
 def plot_smp_accuracy():
     df = get_computation_result("smp_result")
-    print(df)
     df["qa_opt_en"] = df["qa_opt_en"] / df["matching_count"]
     df["qa_stable"] = df["qa_stable"] / df["matching_count"]
     df["qbsolv_opt_en"] = df["qbsolv_opt_en"] / df["matching_count"]
@@ -67,7 +67,6 @@ def plot_smp_accuracy():
     df["size"] = sizes
 
     plt.title("Acurracy for SMP")
-    print(df)
     width = 0.3
     plt.bar(df["size"] - width / 2, 100 * df["qa_stable"], label="qa", width=width, align="center")
     plt.bar(df["size"] + width / 2, 100 * df["qbsolv_stable"], label="qbsolv", width=width, align="center")
