@@ -57,7 +57,7 @@ def compare_solution_count_qbsolv_smp(size, index_f):
 
 def _generate_singe_solutions(size, index_f):
     ut.init_log()
-    log.info(f"At: {size}, {index_f}")
+    log.info(f"At: size: {size}, index_f: {index_f}")
     matching = get_smp(index_f, size)
     matching.compute_all_solutions(mode="SMP")
     store_smp(matching, index_f)
