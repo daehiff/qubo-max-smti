@@ -28,22 +28,22 @@ def main_smp_measurements(generate_solutions=True):
             tmp = compare_solution_count_qbsolv_smp(size, index_f)
             df_smp = df_smp.append(tmp, ignore_index=True)
     store_computation_result(df_smp, "smp_qbsolv_count_result")
-
-
-# for size in sizes_smp_qa:
-#     for index_f in range(samples_per_size_smp):
-#         log.info(f"At: {size}, {index_f}")
-#         out = compute_smp_results(size, index_f)
-#         df_smp = df_smp.append(out, ignore_index=True)
-# store_computation_result(df_smp, "smp_result")
-#
-# df_smp = pd.DataFrame()
-# for size in sizes_smp:
-#     for index_f in range(samples_per_size_smp):
-#         log.info(f"At: {size}, {index_f}")
-#         out = compute_smp_results_qbsolv(size, index_f)
-#         df_smp = df_smp.append(out, ignore_index=True)
-# store_computation_result(df_smp, "smp_result_qbsolvpure")
+    log.info("DONE")
+    for size in sizes_smp_qa:
+        for index_f in range(samples_per_size_smp):
+            log.info(f"At: {size}, {index_f}")
+            out = compute_smp_results(size, index_f)
+            df_smp = df_smp.append(out, ignore_index=True)
+    store_computation_result(df_smp, "smp_result")
+    log.info("DONE")
+    df_smp = pd.DataFrame()
+    for size in sizes_smp:
+        for index_f in range(samples_per_size_smp):
+            log.info(f"At: {size}, {index_f}")
+            out = compute_smp_results_qbsolv(size, index_f)
+            df_smp = df_smp.append(out, ignore_index=True)
+    store_computation_result(df_smp, "smp_result_qbsolvpure")
+    log.info("DONE ALL")
 
 
 def compare_solution_count_qbsolv_smp(size, index_f):
