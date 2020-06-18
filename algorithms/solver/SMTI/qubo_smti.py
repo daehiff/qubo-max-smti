@@ -234,7 +234,7 @@ class QUBO_SMTI:
     def get_optimal_energy(self, size):
         return -(len(self.encoding) * self.p2 + size * self.p1)
 
-    def solve_multi(self, verbose=False, target=None, num_repeats=200):
+    def solve_multi_data(self, verbose=False, target=None, num_repeats=200):
         if self.qubo is None:
             self.pre_process()
         if verbose:
@@ -264,6 +264,37 @@ class QUBO_SMTI:
                                       "energy": energy, "occ": occ,
                                       "valid": valid, "stable": stable, "size": size}, ignore_index=True)
         return samples
+
+    def solve_multi(self, verbose=False, num_repeats=200):
+        if self.qubo is None:
+            self.pre_process()
+
+        if verbose:
+            print("Solving multiple solutions of MAX-SMTI with Qbsolv")
+        if self.qubo_size == 0 or self.qubo_size == 1:
+            return [Solution(self.matching, self.pre_evaluated_solution)]
+
+        if self.mode == "np":  # more memory intensive
+            response = QBSolv().sample(BinaryQuadraticModel.from_numpy_matrix(self.qubo), num_repeats=num_repeats)
+        elif self.mode == "bqm":
+            response = QBSolv().sample(self.qubo, num_repeats=num_repeats)
+        else:
+            raise Exception(f"mode: {self.mode} cannot be solved yet")
+
+        if verbose:
+            print(response)
+            for index, sample in enumerate(list(response.samples())):
+                match, valid = self.encode(sample)
+                print(index, ":", Solution(self.matching, match).is_stable(), match, valid)
+        opt_en = self.get_optimal_energy(self.matching.size)
+        solutions = []
+        for sample, energy, occ in response.record:
+            if energy == opt_en:
+                match, valid = self.encode_qa(sample.tolist())
+                if verbose and not valid:
+                    print("Invalid encoding and valid energy!")
+                solutions.append(Solution(self.matching, match))
+        return solutions
 
     def get_default_penalties(self):
         p1 = 1

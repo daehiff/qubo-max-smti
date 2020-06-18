@@ -1,6 +1,3 @@
-from algorithms.solution import Solution
-
-
 class BACKTRACK_SMP:
     def __init__(self, matching):
         self.matching = matching
@@ -21,6 +18,7 @@ class BACKTRACK_SMP:
                     if q[c] == self.matching.size:
                         c = self.backtrack(c)
                         if c is None:
+                            from algorithms.solution import Solution
                             return list(map(lambda x: Solution(self.matching, x), solutions))
                         from_backtrack = True
                         break

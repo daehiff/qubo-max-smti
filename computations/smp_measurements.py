@@ -16,31 +16,38 @@ def main_smp_measurements(generate_solutions=True):
     log.info("Sarting SMP Evaluation")
     if generate_solutions:
         generate_and_save_all_solutions()
-    df_smp = pd.DataFrame()
-    for size in sizes_smp_qa:
-        for index_f in range(samples_per_size_smp):
-            log.info(f"At: {size}, {index_f}")
-            out = compute_smp_results(size, index_f)
-            df_smp = df_smp.append(out, ignore_index=True)
-    store_computation_result(df_smp, "smp_result")
+    # df_smp = pd.DataFrame()
+    # for size in sizes_smp_qa:
+    #     for index_f in range(samples_per_size_smp):
+    #         log.info(f"At: {size}, {index_f}")
+    #         out = compute_smp_results(size, index_f)
+    #         df_smp = df_smp.append(out, ignore_index=True)
+    # store_computation_result(df_smp, "smp_result")
+    #
+    # df_smp = pd.DataFrame()
+    # for size in sizes_smp:
+    #     for index_f in range(samples_per_size_smp):
+    #         log.info(f"At: {size}, {index_f}")
+    #         out = compute_smp_results_qbsolv(size, index_f)
+    #         df_smp = df_smp.append(out, ignore_index=True)
+    # store_computation_result(df_smp, "smp_result_qbsolvpure")
 
-    df_smp = pd.DataFrame()
-    for size in sizes_smp:
-        for index_f in range(samples_per_size_smp):
-            log.info(f"At: {size}, {index_f}")
-            out = compute_smp_results_qbsolv(size, index_f)
-            df_smp = df_smp.append(out, ignore_index=True)
-    store_computation_result(df_smp, "smp_result_qbsolvpure")
 
+def compare_qbsolv_smp(size, index_f):
+    matching = get_smp(index_f, size)
+    solutions_q = QUBO_SMTI(matching).solve_multi()
 
 def generate_and_save_all_solutions():
     log.info("Computing all possible solutions")
-    for size in sizes_smp_qa:
+    for size in sizes_smp:
         for index_f in range(samples_per_size_smp):
-            log.info(f"At: {size}, {index_f}")
-            matching = get_smp(index_f, size)
-            matching.compute_all_solutions(mode="SMP", m_processing=(size > 7))
-            store_smp(matching, index_f)
+            if size < 18:
+                log.info(f"At: {size}, {index_f}")
+                matching = get_smp(index_f, size)
+                matching.compute_all_solutions(mode="SMP")
+                store_smp(matching, index_f)
+            else:
+                log.info(f"Skip: {size}, {index_f}")
     log.info("Done!")
 
 
@@ -69,7 +76,7 @@ def compute_smp_results_qbsolv(size, index_f):
     solution = solver.solve()
     stable, size_match = solution.is_stable()
 
-    solution_qbsolv = solver.solve_multi()
+    solution_qbsolv = solver.solve_multi_data()
     stable_solution_qbsolv = solution_qbsolv[solution_qbsolv.stable == 1.0]
     qbsolv_unique_stable, qbsolv_opt_en = _count_unique_stable_matchings(stable_solution_qbsolv, opt_en)
 
@@ -86,7 +93,7 @@ def compute_smp_results(size, index_f):
     solution_qa = solver.solve_qa(verbose=False, num_reads=100)
     store_qa_solution(solution_qa, size, index_f, "smp_qa")
 
-    solution_qbsolv = solver.solve_multi()
+    solution_qbsolv = solver.solve_multi_data()
     store_qa_solution(solution_qbsolv, size, index_f, "smp_qbsolv")
 
     stable_solution_qa = solution_qa[solution_qa.stable == 1.0]

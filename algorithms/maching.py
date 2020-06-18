@@ -12,6 +12,8 @@ import numpy as np
 from multiprocessing import Pool
 import tqdm
 
+from algorithms.solver.SMP.backtrack_smp import BACKTRACK_SMP
+
 
 class Matching:
     def __init__(self, males, females, males_pref, females_pref, solutions=None, meta=None):
@@ -260,7 +262,7 @@ class Matching:
             tie_lenght.append(tie_len)
         return tie_lenght
 
-    def compute_all_solutions(self, mode="SMTI", m_processing=True, verbose=True):
+    def compute_all_solutions(self, mode="SMTI"):
         from algorithms.solution import Solution
         if mode == "SMTI":
             all_matches = ut.get_all_matches(self.males, self.females, self.size, mode="SMTI")
@@ -272,21 +274,9 @@ class Matching:
 
             self.solutions = [dict(s) for s in set(frozenset(d.items()) for d in all_solutions)]
         elif mode == "SMP":
-            all_comb = ut.get_all_matches(self.males, self.females, self.size, mode="SMP")
-            all_solutions = []
-            if m_processing:
-                p = Pool(multiprocessing.cpu_count())
-                s_upper = math.factorial(self.size)
-                all_solutions = p.imap_unordered(self._is_matching_stable, all_comb, chunksize=1000)
-                if verbose:
-                    all_solutions = list(filter(lambda x: x is not None, tqdm.tqdm(all_solutions, total=s_upper)))
-                else:
-                    all_solutions = list(filter(lambda x: x is not None, all_solutions))
-            else:
-                for match in all_comb:
-                    tmp = self._is_matching_stable(match)
-                    if tmp is not None:
-                        all_solutions.append(tmp)
+
+            all_solutions = BACKTRACK_SMP(self).solve()
+            all_solutions = list(map(lambda x: x.solution_m, all_solutions))
             self.solutions = all_solutions
 
         else:
