@@ -7,6 +7,8 @@ from algorithms.storage import get_smp, store_smp, store_qa_solution, get_soluti
 
 from computations.config import *
 import algorithms.utils as ut
+import multiprocessing
+from multiprocessing import Pool
 
 log = logging.getLogger()
 
@@ -16,38 +18,62 @@ def main_smp_measurements(generate_solutions=True):
     log.info("Sarting SMP Evaluation")
     if generate_solutions:
         generate_and_save_all_solutions()
-    # df_smp = pd.DataFrame()
-    # for size in sizes_smp_qa:
-    #     for index_f in range(samples_per_size_smp):
-    #         log.info(f"At: {size}, {index_f}")
-    #         out = compute_smp_results(size, index_f)
-    #         df_smp = df_smp.append(out, ignore_index=True)
-    # store_computation_result(df_smp, "smp_result")
-    #
-    # df_smp = pd.DataFrame()
-    # for size in sizes_smp:
-    #     for index_f in range(samples_per_size_smp):
-    #         log.info(f"At: {size}, {index_f}")
-    #         out = compute_smp_results_qbsolv(size, index_f)
-    #         df_smp = df_smp.append(out, ignore_index=True)
-    # store_computation_result(df_smp, "smp_result_qbsolvpure")
+    log.info("Starting SMP Evaluation")
+    df_smp = pd.DataFrame()
+    for size in sizes_smp:
+        if size > 18:
+            continue
+        for index_f in range(samples_per_size_smp):
+            log.info(f"At: {size}, {index_f}")
+            tmp = compare_solution_count_qbsolv_smp(size, index_f)
+            df_smp = df_smp.append(tmp, ignore_index=True)
+    store_computation_result(df_smp, "smp_qbsolv_count_result")
 
 
-def compare_qbsolv_smp(size, index_f):
+# for size in sizes_smp_qa:
+#     for index_f in range(samples_per_size_smp):
+#         log.info(f"At: {size}, {index_f}")
+#         out = compute_smp_results(size, index_f)
+#         df_smp = df_smp.append(out, ignore_index=True)
+# store_computation_result(df_smp, "smp_result")
+#
+# df_smp = pd.DataFrame()
+# for size in sizes_smp:
+#     for index_f in range(samples_per_size_smp):
+#         log.info(f"At: {size}, {index_f}")
+#         out = compute_smp_results_qbsolv(size, index_f)
+#         df_smp = df_smp.append(out, ignore_index=True)
+# store_computation_result(df_smp, "smp_result_qbsolvpure")
+
+
+def compare_solution_count_qbsolv_smp(size, index_f):
     matching = get_smp(index_f, size)
     solutions_q = QUBO_SMTI(matching).solve_multi()
+    solutions_q = list(filter(lambda x: x.is_stable()[0], solutions_q))
+    all_solutions = matching.solutions
+    return {"size": size, "index_f": index_f, "stable_solutions_q": len(solutions_q),
+            "all_solutions": len(all_solutions)}
+
+
+def _generate_singe_solutions(size, index_f):
+    ut.init_log()
+    log.info(f"At: {size}, {index_f}")
+    matching = get_smp(index_f, size)
+    matching.compute_all_solutions(mode="SMP")
+    store_smp(matching, index_f)
+    return (matching, index_f)
+
 
 def generate_and_save_all_solutions():
     log.info("Computing all possible solutions")
-    for size in sizes_smp:
-        for index_f in range(samples_per_size_smp):
-            if size < 18:
-                log.info(f"At: {size}, {index_f}")
-                matching = get_smp(index_f, size)
-                matching.compute_all_solutions(mode="SMP")
-                store_smp(matching, index_f)
-            else:
-                log.info(f"Skip: {size}, {index_f}")
+    tasks = ((size, index_f)
+             for index_f in range(samples_per_size_smp)
+             for size in list(filter(lambda x: 13 < x < 18, sizes_smp)))
+    p = Pool(multiprocessing.cpu_count())
+    all_solutions = p.starmap(_generate_singe_solutions, tasks)
+    print(all_solutions)
+    for matching, index_f in all_solutions:
+        store_smp(matching, index_f)
     log.info("Done!")
 
 
