@@ -66,7 +66,7 @@ def generate_and_save_all_solutions():
     log.info("Computing all possible solutions")
     tasks = [(size, index_f)
              for index_f in range(samples_per_size_smp)
-             for size in list(filter(lambda x: 5 < x < 7, sizes_smp))]
+             for size in list(filter(lambda x: 13 < x < 19, sizes_smp))]
     p = Pool(multiprocessing.cpu_count())
     all_solutions = p.starmap(_generate_singe_solutions, tasks)
     for matching, index_f in all_solutions:
