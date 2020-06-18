@@ -234,7 +234,7 @@ class QUBO_SMTI:
     def get_optimal_energy(self, size):
         return -(len(self.encoding) * self.p2 + size * self.p1)
 
-    def solve_multi(self, verbose=False, target=None, num_repeats=50):
+    def solve_multi(self, verbose=False, target=None, num_repeats=200):
         if self.qubo is None:
             self.pre_process()
         if verbose:
@@ -244,9 +244,9 @@ class QUBO_SMTI:
 
         if self.mode == "np":  # more memory intensive
             response = QBSolv().sample(BinaryQuadraticModel.from_numpy_matrix(self.qubo), num_repeats=num_repeats,
-                                       target=target)
+                                       target=target, algorithm=SOLUTION_DIVERSITY)
         elif self.mode == "bqm":
-            response = QBSolv().sample(self.qubo, num_repeats=num_repeats, target=target)
+            response = QBSolv().sample(self.qubo, num_repeats=num_repeats, target=target, algorithm=SOLUTION_DIVERSITY)
         else:
             raise Exception(f"mode: {self.mode} cannot be solved yet")
 

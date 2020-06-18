@@ -23,7 +23,7 @@ if __name__ == '__main__':
             plot_accuracy_main()
             plot_time_evaluation_main()
         elif sys.argv[1] == "-t":
-            print(os.getenv('TOKEN', ""))
+            print("Space for testing your code")
         else:
             print(f"unspecified argument: {sys.argv[1]}")
     else:

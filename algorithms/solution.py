@@ -75,3 +75,17 @@ class Solution(Matching):
             return True, len(self.solution_w)
         else:
             raise Exception(f"Unknown mode: {mode}")
+
+    def get_male_loss(self):
+        loss = 0
+        for m in self.males:
+            w = self.solution_m[m]
+            loss += self.get_index(w, m)
+        return loss
+
+    def get_female_loss(self):
+        loss = 0
+        for w in self.females:
+            m = self.solution_w[w]
+            loss += self.get_index(m, w)
+        return loss
