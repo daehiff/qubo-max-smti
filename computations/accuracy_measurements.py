@@ -74,14 +74,13 @@ def compute_accuracy_measurement(size, index_f, use_qa=False):
 
 
 def compute_qubo_en(size, index_f, use_qa=False):
-    if not use_qa:
-        return None
     matching = get_smti(index_f, size)
     lp_en = compute_lp_energy(matching)
-
-    qa_solution = get_solution_qa(size, index_f, "smti")
-    qa_en = min(qa_solution["energy"])
-
+    if use_qa:
+        qa_solution = get_solution_qa(size, index_f, "smti")
+        qa_en = min(qa_solution["energy"])
+    else:
+        qa_en = 0.0
     solution = QUBO_SMTI(matching).solve()
     qbsolv_en = solution.energy
 

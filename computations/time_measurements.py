@@ -125,3 +125,13 @@ def main_time_measure():
             df_time = df_time.append(out, ignore_index=True)
     log.info("Done!")
     store_computation_result(df_time, "time_result")
+
+    df_time = pd.DataFrame()
+    log.info(f"staring LP vs. QUBO Preprocessing")
+    for size in sizes_smti:
+        for index_f in range(samples_per_size_smti):
+            log.info(f"At: {size}, {index_f}")
+            out = measure_lp_qubo_preprocessing(size, index_f, times_repeat=10)
+            df_time = df_time.append(out, ignore_index=True)
+    log.info("Done!")
+    store_computation_result(df_time, "qubo_lp_time_result")
