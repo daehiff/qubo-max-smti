@@ -14,14 +14,25 @@ log = logging.getLogger()
 
 
 def main_smp_measurements(generate_solutions=True):
+    """
+    Main Method to measure the QUBO Formulation against the SMP results:
+    #1
+    :param generate_solutions:
+    :return:
+    """
     ut.init_log()
     log.info("Sarting SMP Evaluation")
     if generate_solutions:
         generate_and_save_all_solutions()
     log.info("Starting SMP Evaluation")
+
+    ###########################################################
+    # compare the count of found matches
+    # by qbsolv vs the quantum annealer
+    ###########################################################
     df_smp = pd.DataFrame()
     for size in sizes_smp:
-        if size > 18:
+        if size >= smp_solve_max:
             continue
         for index_f in range(samples_per_size_smp):
             log.info(f"At: {size}, {index_f}")
@@ -29,6 +40,12 @@ def main_smp_measurements(generate_solutions=True):
             df_smp = df_smp.append(tmp, ignore_index=True)
     store_computation_result(df_smp, "smp_qbsolv_count_result")
     log.info("DONE")
+
+    ###########################################################
+    # check how many stable pairs have found by qbsolv in the range
+    # of the QA
+    ###########################################################
+    df_smp = pd.DataFrame()
     for size in sizes_smp_qa:
         for index_f in range(samples_per_size_smp):
             log.info(f"At: {size}, {index_f}")
@@ -36,6 +53,11 @@ def main_smp_measurements(generate_solutions=True):
             df_smp = df_smp.append(out, ignore_index=True)
     store_computation_result(df_smp, "smp_result")
     log.info("DONE")
+
+    ###########################################################
+    # compare the counts of the Qbsolv on a large scale by (previously)
+    # finding all stable matchings by backtracking
+    ###########################################################
     df_smp = pd.DataFrame()
     for size in sizes_smp:
         for index_f in range(samples_per_size_smp):
@@ -66,7 +88,7 @@ def generate_and_save_all_solutions():
     log.info("Computing all possible solutions")
     tasks = [(size, index_f)
              for index_f in range(samples_per_size_smp)
-             for size in list(filter(lambda x: 13 < x < 19, sizes_smp))]
+             for size in list(filter(lambda x: x < smp_solve_max, sizes_smp))]
     p = Pool(multiprocessing.cpu_count())
     all_solutions = p.starmap(_generate_singe_solutions, tasks)
     for matching, index_f in all_solutions:

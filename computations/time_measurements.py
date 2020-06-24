@@ -115,6 +115,12 @@ def measure_lp_qubo_preprocessing(size, index_f, times_repeat=10):
 
 
 def main_time_measure():
+    """
+    Simple Measurement of the Runtime of Qbsolv vs. the APX-Algorithms
+
+    Next measure QUBO vs. LP-Preprocess
+    :return:
+    """
     ut.init_log()
     log.info(f"Starting Time Measurement")
     df_time = pd.DataFrame()

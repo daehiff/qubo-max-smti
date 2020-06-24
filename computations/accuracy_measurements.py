@@ -14,6 +14,13 @@ log = logging.getLogger()
 
 
 def main_accuracy(max_qubo_size=8):
+    """
+    Measurements regarding the accuracy for MAX-SMTI:
+    Qbsolv against APX-Algorithms.
+    Next compare the energy of the found QUBO solution to the energy found by LP
+    :param max_qubo_size:
+    :return:
+    """
     ut.init_log()
     log.info("Starting Accurcay Measurement for SMTI")
     log.info("Evaluating against other algorithms..")

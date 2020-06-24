@@ -50,7 +50,7 @@ def generate_smp_set(sizes, samples_per_size):
 
 def plot_equidistribution_smti(sizes, samples_per_size):
     """
-    A plot that shows the equidistribution of sizes/ties per size category for smti dataset
+    A plot that shows the distribution of sizes/ties per size category for smti dataset
     """
 
     ###########################################

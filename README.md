@@ -12,8 +12,8 @@ To run the source code: `pipenv run python main.p`
 
 ## Enviroment
 
-Enviroment variables:
+Enviroment variables to set:
 ```
-STORAGE=./storage # set the root dir in order to store the data
-TOKEN=DEV-... # dwave api token
+STORAGE=./storage    # set the root dir in order to store the data
+TOKEN=DEV-...        # dwave api token
 ```
