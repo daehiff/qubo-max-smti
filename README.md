@@ -8,7 +8,7 @@ Git LFS (see: https://git-lfs.github.com/) needs to be installed.
 
 To install the dependencies: `pipenv install`
 
-To run the source code: `pipenv run python main.p`
+To run the source code: `pipenv run python main.py`
 
 ## Enviroment
 
