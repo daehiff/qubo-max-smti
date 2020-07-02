@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 def plot_time_evaluation_main():
     compare_runtime_algorithms()
+    compare_qbsolv_preprocessing()
 
 
 def compare_runtime_algorithms():
@@ -45,3 +46,28 @@ def compare_runtime_algorithms():
     plt.xlabel('problem size')
     plt.legend()
     show_store_plot("runtime")
+
+
+def compare_qbsolv_preprocessing():
+    # qubo_lp_time_result
+    df = get_computation_result("qubo_lp_time_result")
+    del df["lp_pp[s]"]
+    del df["lp_solving[s]"]
+    del df["lp_pp_var[%]"]
+    del df["lp_solving_var[%]"]
+    del df["index_f"]
+    df["qubo_total_time"] = df["qubo_pp[s]"] + df["qubo_solving[s]"]
+    df["qubo_pp[s]"] = df["qubo_pp[s]"] / df["qubo_total_time"]
+    df["qubo_solving[s]"] = df["qubo_solving[s]"] / df["qubo_total_time"]
+    df["qubo_total_time"] = df["qubo_total_time"] / df["qubo_total_time"]
+
+    sizes = df["size"].unique()
+    df = df.groupby(["size"]).mean()
+
+    plt.plot(sizes, df["qubo_total_time"])
+    plt.plot(sizes, df["qubo_pp[s]"])
+    plt.fill_between(sizes, df["qubo_pp[s]"], df["qubo_total_time"], alpha=0.30, label="time to solve QUBO")
+    plt.fill_between(sizes, 0, df["qubo_pp[s]"], alpha=0.30, label="time for preprocessing")
+    plt.margins(x=0.01, y=0.01)
+    plt.legend()
+    show_store_plot("qubo_pp_runtime", show=True)

@@ -61,7 +61,6 @@ def plot_smp_accuracy():
     df_1["stable_solutions_q"] = df_1["stable_solutions_q"] / df_1["all_solutions"]
     sizes_1 = df_1["size"].unique()
     df_1var = df_1.groupby(["size"]).var()
-    print(df_1var)
     df_1 = df_1.groupby(["size"]).mean()
 
     df = get_computation_result("smp_result")
@@ -75,15 +74,13 @@ def plot_smp_accuracy():
 
     plt.title("Accuracy for SMP")
     width = 0.3
-    plt.bar(sizes - width / 2, 100 * df["qa_stable"], label="qa", width=width, align="center",
-            yerr=100 * dfvar["qa_stable"])
-    plt.bar(sizes_1 + width / 2, 100 * df_1["stable_solutions_q"], label="qbsolv", width=width, align="center",
-            yerr=100 * df_1var["stable_solutions_q"], ecolor='black', capsize=2)
+    plt.bar(sizes - width / 2, 100 * df["qa_stable"], label="qa", width=width, align="center")
+    plt.bar(sizes_1 + width / 2, 100 * df_1["stable_solutions_q"], label="qbsolv", width=width, align="center")
     plt.xticks(sizes_1)
     plt.ylabel('portion of available solutions [%]')
     plt.xlabel('problem size')
     plt.legend()
-    show_store_plot("smp_accuracy", show=True)
+    show_store_plot("smp_accuracy")
 
 
 def plot_accuracy_algorithms():

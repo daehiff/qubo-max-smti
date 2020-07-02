@@ -14,8 +14,8 @@ log = logging.getLogger()
 def main_generation():
     ut.init_log()
     log.info("Generating datasets for SMP and SMTI")
-    generate_smti_set(sizes_smti, samples_per_size_smti)
-    generate_smp_set(sizes_smp, samples_per_size_smp)
+    # generate_smti_set(sizes_smti, samples_per_size_smti)
+    # generate_smp_set(sizes_smp, samples_per_size_smp)
     log.info("DONE! Plotting the distributions of sizes and preferencelists")
     plot_equidistribution_smti(sizes_smti, samples_per_size_smti)
 
