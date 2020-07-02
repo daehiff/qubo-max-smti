@@ -31,9 +31,9 @@ def generate_smti_set(sizes, samples_per_size):
     """
     for size in sizes:
         for index_f in range(samples_per_size):
-            p1 = round(random.uniform(0.01, 1), 2)
-            p2 = round(random.uniform(0.01, 1), 2)
-            create_and_save_smti(index_f, size, p1, p2)
+            g1 = round(random.uniform(0.01, 1), 2)
+            g2 = round(random.uniform(0.01, 1), 2)
+            create_and_save_smti(index_f, size, g1, g2)
 
 
 def generate_smp_set(sizes, samples_per_size):

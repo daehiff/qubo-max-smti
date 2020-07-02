@@ -4,7 +4,6 @@ import os
 from computations.accuracy_measurements import main_accuracy
 from computations.dataset_generation import main_generation
 from computations.smp_measurements import main_smp_measurements
-from computations.test import test_main
 from computations.time_measurements import main_time_measure
 from evaluations.accuracy_evaluation import plot_accuracy_main
 from evaluations.runtime_evaluation import plot_time_evaluation_main
@@ -24,7 +23,8 @@ if __name__ == '__main__':
             plot_accuracy_main()
             plot_time_evaluation_main()
         elif sys.argv[1] == "-t":
-            test_main()
+            print("Insert Test Main")
+            # test_main()
         else:
             print(f"unspecified argument: {sys.argv[1]}")
     else:

@@ -26,65 +26,65 @@ def _create_sm_preferences(males, females):
     return males_pref, females_pref
 
 
-def _create_smti_preference(persons, other_persons, size, p1, p2):
+def _create_smti_preference(persons, other_persons, size, g1, g2):
     """
     create all preferences for one gender
     Preflists currently start at size: 2
     :param persons: either males list or females list
     :param other_persons:  vice versa list to persons
     :param size: how many males females <=> size
-    :param p1: (0,1] => possibility that an element will be IN the preflist => determines the lenght
-    :param p2: (0,1] => possibility of a tie
+    :param g1: (0,1] => possibility that an element will be IN the preflist => determines the lenght
+    :param g2: (0,1] => possibility of a tie
     :return:
     """
-    assert 0 < p1 <= 1 and 0 < p2 <= 1
+    assert 0 < g1 <= 1 and 0 < g2 <= 1
     persons_pref = {}
     other_persons_1 = deepcopy(other_persons)
     for person in persons:
         new_len = 2
         for _ in range(size - 2):
-            if random.uniform(0, 1) < p1:
+            if random.uniform(0, 1) < g1:
                 new_len += 1
         random.shuffle(other_persons_1)
         persons_pref[person] = {other_p: index for index, other_p in enumerate(other_persons_1[:new_len])}
         last_person = other_persons_1[0]
         for other_person in other_persons_1[:new_len]:
             random_p2 = random.uniform(0, 1)
-            if p2 < random_p2:
+            if g2 < random_p2:
                 persons_pref[person][other_person] = persons_pref[person][last_person]
             last_person = other_person
     return persons_pref
 
 
-def create_smti_instance(size: int, p1: float, p2: float):
+def create_smti_instance(size: int, g1: float, g2: float):
     """
     create one instance for SMTI
     :param size: how many males females <=> size
-    :param p1: (0,1] => possibility that an element will be IN the preflist => determines the lenght
-    :param p2: (0,1] => possibility of a tie
+    :param g1: (0,1] => possibility that an element will be IN the preflist => determines the lenght
+    :param g2: (0,1] => possibility of a tie
     :return:
     """
-    assert 0 < p1 <= 1 and 0 < p2 <= 1
+    assert 0 < g1 <= 1 and 0 < g2 <= 1
     males, females = ut.create_males_and_females(size)
-    males_pref = _create_smti_preference(males, females, size, p1, p2)
-    females_pref = _create_smti_preference(females, males, size, p1, p2)
+    males_pref = _create_smti_preference(males, females, size, g1, g2)
+    females_pref = _create_smti_preference(females, males, size, g1, g2)
     return Matching(males, females, males_pref, females_pref)
 
 
-def create_and_save_smti(index_f: int, size: int, p1: float, p2: float, compute_solutions=False):
+def create_and_save_smti(index_f: int, size: int, g1: float, g2: float, compute_solutions=False):
     """
     create one instance for SMTI
     :param index_f: unique sample index
     :param size: how many males females <=> size
-    :param p1: (0,1] => possibility that an element will be IN the preflist => determines the lenght
-    :param p2: (0,1] => possibility of a tie
+    :param g1: (0,1] => possibility that an element will be IN the preflist => determines the lenght
+    :param g2: (0,1] => possibility of a tie
     :param compute_solutions: wether or not you want to compute all possible solutions
     :return:
     """
-    tmp_match = create_smti_instance(size, p1, p2)
+    tmp_match = create_smti_instance(size, g1, g2)
     if compute_solutions:
         tmp_match.compute_all_solutions(mode="SMTI")
-    store.store_smti(tmp_match, p1, p2, index_f)
+    store.store_smti(tmp_match, g1, g2, index_f)
     return tmp_match
 
 

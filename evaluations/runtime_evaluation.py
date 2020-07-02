@@ -18,17 +18,30 @@ def compare_runtime_algorithms():
     sizes = df["size"].unique()
     df = df.groupby(["size"]).mean()
     # convert to ms
-    mean_qbsolv = list(map(lambda x: 1000 * x, df["qubo_dt[s]"]))
-    mean_lp = list(map(lambda x: 1000 * x, df["lp_dt[s]"]))
-    mean_shiftbrk = list(map(lambda x: 1000 * x, df["shiftbrk_dt[s]"]))
-    mean_kirialy = list(map(lambda x: 1000 * x, df["kiraly_dt[s]"]))
+    conv = 1000
+    df["qubo_dt"] = df["qubo_dt[s]"] * conv
+    df["qubo_dt_var"] = df["qubo_dt_var[%]"] / 100 * df["qubo_dt"]
 
-    plt.plot(sizes, mean_qbsolv, label="QUBO-MAX-SMTI")
-    plt.plot(sizes, mean_lp, label="MAX-SMTI-LP")
-    plt.plot(sizes, mean_shiftbrk, label="SHIFTBRK")
-    plt.plot(sizes, mean_kirialy, label="Krialy2")
-    # plt.xticks(sizes)
+    df["lp_dt"] = df["lp_dt[s]"] * conv
+    df["lp_dt_var"] = df["lp_dt_var[%]"] / 100 * df["lp_dt"]
+
+    df["shiftbrk_dt"] = df["shiftbrk_dt[s]"] * conv
+    df["shiftbrk_dt_var"] = df["shiftbrk_dt_var[%]"] / 100 * df["shiftbrk_dt"]
+
+    df["kiraly_dt"] = df["kiraly_dt[s]"] * conv
+    df["kiraly_dt_var"] = df["kiraly_dt_var[%]"] / 100 * df["kiraly_dt"]
+
+    # plt.errorbar(sizes, df["qubo_dt"], df["qubo_dt_var"], fmt='-,', capsize=0.1, label="QUBO")
+    # plt.errorbar(sizes, df["lp_dt"], df["lp_dt_var"], fmt='-,', barsabove=True, label="LP")
+    # plt.errorbar(sizes, df["shiftbrk_dt"], df["shiftbrk_dt_var"], fmt='-,', barsabove=True, label="SHIFTBRK")
+    # plt.errorbar(sizes, df["kiraly_dt"], df["kiraly_dt_var"], fmt='-,', barsabove=True, label="kiraly")
+
+    plt.plot(sizes, df["qubo_dt"], label="QUBO")
+    plt.plot(sizes, df["lp_dt"], label="MAX-SMTI-LP")
+    plt.plot(sizes, df["shiftbrk_dt"], label="SHIFTBRK")
+    plt.plot(sizes, df["kiraly_dt"], label="Krialy2")
+
     plt.ylabel('time [ms]')
     plt.xlabel('problem size')
     plt.legend()
-    show_store_plot("runtime.png")
+    show_store_plot("runtime")
