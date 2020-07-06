@@ -22,18 +22,18 @@ def main_accuracy(max_qubo_size=8):
     :return:
     """
     ut.init_log()
-    log.info("Starting Accurcay Measurement for SMTI")
-    log.info("Evaluating against other algorithms..")
-    df_acc = pd.DataFrame()
-    for size in sizes_smti:
-        for index_f in range(samples_per_size_smti):
-            log.info(f"At: {size}, {index_f}")
-            out = compute_accuracy_measurement(size, index_f, use_qa=(size < max_qubo_size))
-            df_acc = df_acc.append(out, ignore_index=True)
-
-    store_computation_result(df_acc, "accuracy_results")
-    log.info("DONE!")
-    log.info("Checking Energy")
+    # log.info("Starting Accurcay Measurement for SMTI")
+    # log.info("Evaluating against other algorithms..")
+    # df_acc = pd.DataFrame()
+    # for size in sizes_smti:
+    #     for index_f in range(samples_per_size_smti):
+    #         log.info(f"At: {size}, {index_f}")
+    #         out = compute_accuracy_measurement(size, index_f, use_qa=(size < max_qubo_size))
+    #         df_acc = df_acc.append(out, ignore_index=True)
+    #
+    # store_computation_result(df_acc, "accuracy_results")
+    # log.info("DONE!")
+    # log.info("Checking Energy")
 
     df_acc = pd.DataFrame()
     for size in sizes_smti:
@@ -82,16 +82,29 @@ def compute_accuracy_measurement(size, index_f, use_qa=False):
 
 def compute_qubo_en(size, index_f, use_qa=False):
     matching = get_smti(index_f, size)
-    lp_en = compute_lp_energy(matching)
+
+    solver = QUBO_SMTI(matching, mode="np").pre_process()
+    solution_lp = LP_smti(matching).solve()
+
+    x = ut.compute_qubo_vector_lp(solution_lp, solver)
+    lp_en = solver.compute_energy(x)
+
     if use_qa:
         qa_solution = get_solution_qa(size, index_f, "smti")
         qa_en = min(qa_solution["energy"])
     else:
         qa_en = 0.0
+
     solution = QUBO_SMTI(matching).solve()
+
     qbsolv_en = solution.energy
 
-    return {"size": size, "index_f": index_f, "qa_en": qa_en, "lp_en": lp_en, "qbsolv_en": qbsolv_en}
+    (opt_stable, opt_size) = solution_lp.is_stable()
+    (qubo_stable, qubo_size) = solution.is_stable()
+    return {"size": size, "index_f": index_f,
+            "qa_en": qa_en, "lp_en": lp_en, "qbsolv_en": qbsolv_en,
+            "opt_size": opt_size, "opt_stable": opt_stable, "qubo_size": qubo_size, "qubo_stable": qubo_stable,
+            "opt_en": solver.get_optimal_energy(opt_size), "min_valid_en": solver.get_optimal_energy(0)}
 
 
 def compute_lp_energy(matching):
