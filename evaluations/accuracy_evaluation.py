@@ -37,6 +37,7 @@ def plot_qubo_qa_vs_lp():
     df = get_computation_result("qbsolv_en_results")
     sizes = df["size"].unique()
     qbsolv_results = {size: {"opt": 0, "stable": 0, "invalid": 0} for size in sizes}
+    qa_results = {size: {"opt": 0, "stable": 0, "invalid": 0} for size in sizes}
     for index, row in df.iterrows():
         # more negative energy is better
         size = row["size"]
@@ -49,8 +50,16 @@ def plot_qubo_qa_vs_lp():
         else:
             qbsolv_results[size]["invalid"] += 1
 
+        if size < 8:
+            if row["opt_en"] == row["qa_en"]:
+                qa_results[size]["opt"] += 1
+            elif row["opt_en"] < row["qa_en"] < row["min_valid_en"]:
+                qa_results[size]["stable"] += 1
+            else:
+                qa_results[size]["invalid"] += 1
+
     _barplot_en_results(qbsolv_results, sizes, solver_t="qbsolv")
-    # _barplot_en_results(qa_results, sizes[:5], solver_t="qa")
+    _barplot_en_results(qa_results, sizes[:5], solver_t="qa")
 
 
 def plot_smp_accuracy():
