@@ -29,7 +29,7 @@ def _barplot_en_results(qbsolv_results, sizes, solver_t="qa"):
     # plt.ylabel("portion of a instance [%]")
     plt.legend()
     # plt.title(f"Energy Comparison")
-    show_store_plot(f"{solver_t}", show=True)
+    show_store_plot(f"{solver_t}" )
 
 
 def plot_qubo_qa_vs_lp():
