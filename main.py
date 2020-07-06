@@ -4,7 +4,8 @@ import os
 from computations.accuracy_measurements import main_accuracy, compute_qubo_en
 from computations.dataset_generation import main_generation
 from computations.smp_measurements import main_smp_measurements
-from computations.time_measurements import main_time_measure
+from computations.time_measurements import main_time_measure, create_setup, measure_lp_qubo_preprocessing, \
+    measure_time_instance
 from evaluations.accuracy_evaluation import plot_accuracy_main
 from evaluations.runtime_evaluation import plot_time_evaluation_main
 
@@ -24,7 +25,6 @@ if __name__ == '__main__':
             plot_time_evaluation_main()
         elif sys.argv[1] == "-t":
             print("Insert Test Main")
-            print(compute_qubo_en(29, 2))
         else:
             print(f"unspecified argument: {sys.argv[1]}")
     else:

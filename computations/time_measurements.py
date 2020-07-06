@@ -26,6 +26,19 @@ matching = get_smti(index_f={index_f},size={size} )
     """
 
 
+def create_setup_pp(size, index_f, solver):
+    return f"""
+from algorithms.solver.SMTI.kiraly.kiralySMTI import Kirialy2
+from algorithms.solver.SMTI.lp_smti import LP_smti
+from algorithms.solver.SMTI.qubo_smti import QUBO_SMTI
+from algorithms.solver.SMTI.shift_brk.shift_brk import ShiftBrk
+from algorithms.storage import get_smti
+matching = get_smti(index_f={index_f},size={size})
+solver = {solver}
+solver.pre_process()
+        """
+
+
 def get_solver(solver_type):
     if solver_type == "qubo":
         return "QUBO_SMTI(matching)"
@@ -35,6 +48,8 @@ def get_solver(solver_type):
         return "ShiftBrk(matching)"
     elif solver_type == "kiraly":
         return "Kirialy2(matching)"
+    elif solver_type == "variable":
+        return "solver"
     else:
         raise Exception(f"unknown solver_type: {solver_type}")
 
@@ -104,9 +119,11 @@ def measure_lp_qubo_preprocessing(size, index_f, times_repeat=10):
     result = {"size": size, "index_f": index_f}
     for solver_type in solver_types:
         solver = get_solver(solver_type)
-        preprocessed_setup = setup + f"\n{solver}.pre_process()"
-        d_t_solving, d_t_var_solving = measure_solving(solver_type, preprocessed_setup, times_repeat=times_repeat)
+
+        pp_setup = create_setup_pp(size, index_f, solver)
+        d_t_solving, d_t_var_solving = measure_solving("variable", pp_setup, times_repeat=times_repeat)
         d_t_preprocessing, d_t_var_preprocessing = measure_preprocessing(solver_type, setup, times_repeat=times_repeat)
+
         result[f"{solver_type}_solving[s]"] = d_t_solving
         result[f"{solver_type}_solving_var[%]"] = d_t_var_solving
         result[f"{solver_type}_pp[s]"] = d_t_preprocessing
