@@ -70,4 +70,4 @@ def compare_qbsolv_preprocessing():
     plt.fill_between(sizes, 0, df["qubo_pp[s]"], alpha=0.30, label="time for preprocessing")
     plt.margins(x=0.01, y=0.01)
     plt.legend()
-    show_store_plot("qubo_pp_runtime", show=True)
+    show_store_plot("qubo_pp_runtime", show=False)

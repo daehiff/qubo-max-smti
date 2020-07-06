@@ -1,4 +1,7 @@
+from pprint import pprint
+
 import matplotlib.pyplot as plt
+import numpy as np
 
 from algorithms.solver.SMTI.qubo_smti import QUBO_SMTI
 from algorithms.storage import get_computation_result, get_smti, show_store_plot
@@ -14,46 +17,40 @@ def _barplot_en_results(qbsolv_results, sizes, solver_t="qa"):
     width = 0.5
     fig, ax = plt.subplots()
 
-    lp_worse = [100 * qbsolv_results[size]["lw"] / 50.0 for size in sizes]
-    lp_equal = [100 * qbsolv_results[size]["eq"] / 50.0 for size in sizes]
-    lp_better = [100 * qbsolv_results[size]["lb"] / 50.0 for size in sizes]
-    assert all([x == 0.0 for x in lp_worse])
-    # ax.bar(sizes, lp_worse, width, label=f"{solver_t} en is better")
-    ax.bar(sizes, lp_equal, width=width, label="correct solutions found by the quantum annealer")
-    ax.bar(sizes, lp_better, bottom=lp_equal, width=width, label="lp-energy was better")
+    opt = [100 * qbsolv_results[size]["opt"] / 50.0 for size in sizes]
+    stable = [100 * qbsolv_results[size]["stable"] / 50.0 for size in sizes]
+    invalid = [100 * qbsolv_results[size]["invalid"] / 50.0 for size in sizes]
+    # assert all([x == 0.0 for x in lp_worse])
+    ax.bar(sizes, opt, bottom=0, width=width, label=f"en_qubo = en_opt (optimal)")
+    ax.bar(sizes, stable, bottom=opt, width=width, label="en_opt < en_qubo < en_valid (valid)")
+    ax.bar(sizes, invalid, bottom=np.array(stable) + np.array(opt), width=width, label="en_qubo > en_valid (invalid)")
 
     plt.xlabel("problem size")
-    plt.ylabel("portion of a instance [%]")
+    # plt.ylabel("portion of a instance [%]")
     plt.legend()
     # plt.title(f"Energy Comparison")
-    show_store_plot(f"{solver_t}")
+    show_store_plot(f"{solver_t}", show=True)
 
 
 def plot_qubo_qa_vs_lp():
     solvers = ["lp", "qa", "qbsolv"]
     df = get_computation_result("qbsolv_en_results")
     sizes = df["size"].unique()
-    qa_results = {size: {"eq": 0, "lb": 0, "lw": 0} for size in sizes}
-    qbsolv_results = {size: {"eq": 0, "lb": 0, "lw": 0} for size in sizes}
+    qbsolv_results = {size: {"opt": 0, "stable": 0, "invalid": 0} for size in sizes}
     for index, row in df.iterrows():
         # more negative energy is better
         size = row["size"]
-        if row["lp_en"] < row["qa_en"]:
-            qa_results[size]["lb"] += 1
-        elif row["lp_en"] > row["qa_en"]:
-            qa_results[size]["lw"] += 1
-        else:
-            qa_results[size]["eq"] += 1
 
-        if row["lp_en"] < row["qbsolv_en"]:
-            qbsolv_results[size]["lb"] += 1
-        elif row["lp_en"] > row["qbsolv_en"]:
-            qbsolv_results[size]["lw"] += 1
+        assert row["opt_en"] == row["lp_en"]
+        if row["opt_en"] == row["qbsolv_en"]:
+            qbsolv_results[size]["opt"] += 1
+        elif row["opt_en"] < row["qbsolv_en"] < row["min_valid_en"]:
+            qbsolv_results[size]["stable"] += 1
         else:
-            qbsolv_results[size]["eq"] += 1
+            qbsolv_results[size]["invalid"] += 1
 
     _barplot_en_results(qbsolv_results, sizes, solver_t="qbsolv")
-    _barplot_en_results(qa_results, sizes[:5], solver_t="qa")
+    # _barplot_en_results(qa_results, sizes[:5], solver_t="qa")
 
 
 def plot_smp_accuracy():
