@@ -154,8 +154,8 @@ def measure_qubo_vs_backtracking(size, index_f):
     mean_b, var_b = measure_solving("variable", setup, times_repeat=10)
     setup = create_setup_smp(size, index_f)
     mean_q, var_q = measure_solving("qubo", setup, times_repeat=10)
-    print("backtracking: ", mean_b, "+-", var_b)
-    print("QUBO: ", mean_q, "+-", var_q)
+    # print("backtracking: ", mean_b, "+-", var_b)
+    # print("QUBO: ", mean_q, "+-", var_q)
     return {"mean_b": mean_b, "var_b": var_b, "mean_q": mean_q, "var_q": var_q}
 
 
@@ -163,7 +163,9 @@ def main_time_measure():
     """
     Simple Measurement of the Runtime of Qbsolv vs. the APX-Algorithms
 
-    Next measure QUBO vs. LP-Preprocess
+    Next_ measure QUBO vs. LP-Preprocess
+
+    At last: QUBO vs. Backtracking on #P-SMP
     :return:
     """
     ut.init_log()
