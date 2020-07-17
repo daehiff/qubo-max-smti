@@ -1,12 +1,14 @@
 import sys
 import os
 # evaluations
+import time
+
 from algorithms.solver.SMTI.qubo_smti import QUBO_SMTI
 from algorithms.storage import get_solution_qa, get_smp
 from computations.accuracy_measurements import main_accuracy, compute_qubo_en
 from computations.dataset_generation import main_generation
 from computations.smp_measurements import main_smp_measurements
-from computations.time_measurements import main_time_measure
+from computations.time_measurements import main_time_measure, measure_qubo_vs_backtracking
 from evaluations.accuracy_evaluation import plot_accuracy_main
 from evaluations.runtime_evaluation import plot_time_evaluation_main
 
@@ -26,10 +28,16 @@ if __name__ == '__main__':
             plot_time_evaluation_main()
         elif sys.argv[1] == "-t":
             print("Insert Test Main")
-            for index_f in range(20):
-                solution_qa = get_solution_qa(5, index_f, "smp_qa")
-                # print(solution_qa["stable"])
-                assert all([0.0 == solution for solution in solution_qa["stable"]])
+            import numpy as np
+
+            mean_times = []
+            for size in range(3, 18):
+                print(size)
+                start = time.time()
+                measure_qubo_vs_backtracking(size, 0)
+                mean_times.append(time.time() - start)
+            print(mean_times)
+            print(np.mean(mean_times))
             # matching = get_smp(1, 5)
             # print(matching.solutions)
             # solver = QUBO_SMTI(matching).pre_process()

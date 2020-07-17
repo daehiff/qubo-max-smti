@@ -1,6 +1,7 @@
 import logging
 import timeit
 
+from algorithms.solver.SMP.backtrack_smp import BACKTRACK_SMP
 from algorithms.solver.SMTI.kiraly.kiralySMTI import Kirialy2
 from algorithms.solver.SMTI.lp_smti import LP_smti
 from algorithms.solver.SMTI.qubo_smti import QUBO_SMTI
@@ -20,10 +21,23 @@ def create_setup(size, index_f):
 from algorithms.solver.SMTI.kiraly.kiralySMTI import Kirialy2
 from algorithms.solver.SMTI.lp_smti import LP_smti
 from algorithms.solver.SMTI.qubo_smti import QUBO_SMTI
+from algorithms.solver.SMP.backtrack_smp import BACKTRACK_SMP
 from algorithms.solver.SMTI.shift_brk.shift_brk import ShiftBrk
 from algorithms.storage import get_smti
 matching = get_smti(index_f={index_f},size={size} )
-    """
+"""
+
+
+def create_setup_smp(size, index_f):
+    return f"""
+from algorithms.solver.SMTI.kiraly.kiralySMTI import Kirialy2
+from algorithms.solver.SMTI.lp_smti import LP_smti
+from algorithms.solver.SMTI.qubo_smti import QUBO_SMTI
+from algorithms.solver.SMP.backtrack_smp import BACKTRACK_SMP
+from algorithms.solver.SMTI.shift_brk.shift_brk import ShiftBrk
+from algorithms.storage import get_smp
+matching = get_smp(index_f={index_f},size={size} )
+"""
 
 
 def create_setup_pp(size, index_f, solver):
@@ -32,6 +46,7 @@ from algorithms.solver.SMTI.kiraly.kiralySMTI import Kirialy2
 from algorithms.solver.SMTI.lp_smti import LP_smti
 from algorithms.solver.SMTI.qubo_smti import QUBO_SMTI
 from algorithms.solver.SMTI.shift_brk.shift_brk import ShiftBrk
+
 from algorithms.storage import get_smti
 matching = get_smti(index_f={index_f},size={size})
 solver = {solver}
@@ -63,6 +78,8 @@ def eval_algorithm(matching, solver_type):
         return ShiftBrk(matching).solve()
     elif solver_type == "kiraly":
         return Kirialy2(matching).solve()
+    elif solver_type == "backtracking":
+        return BACKTRACK_SMP(matching).solve()
     else:
         raise Exception(f"unknown solver_type: {solver_type}")
 
@@ -131,6 +148,17 @@ def measure_lp_qubo_preprocessing(size, index_f, times_repeat=10):
     return result
 
 
+def measure_qubo_vs_backtracking(size, index_f):
+    setup = create_setup_smp(size, index_f)
+    setup += "\nsolver = BACKTRACK_SMP(matching)"
+    mean_b, var_b = measure_solving("variable", setup, times_repeat=10)
+    setup = create_setup_smp(size, index_f)
+    mean_q, var_q = measure_solving("qubo", setup, times_repeat=10)
+    print("backtracking: ", mean_b, "+-", var_b)
+    print("QUBO: ", mean_q, "+-", var_q)
+    return {"mean_b": mean_b, "var_b": var_b, "mean_q": mean_q, "var_q": var_q}
+
+
 def main_time_measure():
     """
     Simple Measurement of the Runtime of Qbsolv vs. the APX-Algorithms
@@ -149,12 +177,20 @@ def main_time_measure():
     # log.info("Done!")
     # store_computation_result(df_time, "time_result")
 
+    # df_time = pd.DataFrame()
+    #     # log.info(f"staring LP vs. QUBO Preprocessing")
+    #     # for size in sizes_smti:
+    #     #     for index_f in range(samples_per_size_smti):
+    #     #         log.info(f"At: {size}, {index_f}")
+    #     #         out = measure_lp_qubo_preprocessing(size, index_f, times_repeat=10)
+    #     #         df_time = df_time.append(out, ignore_index=True)
+    #     # log.info("Done!")
     df_time = pd.DataFrame()
-    log.info(f"staring LP vs. QUBO Preprocessing")
-    for size in sizes_smti:
-        for index_f in range(samples_per_size_smti):
+    log.info(f"Backtracking vs. QUBO")
+    for size in sizes_smp:
+        for index_f in range(samples_per_size_smp):
             log.info(f"At: {size}, {index_f}")
-            out = measure_lp_qubo_preprocessing(size, index_f, times_repeat=10)
+            out = measure_qubo_vs_backtracking(size, index_f)
             df_time = df_time.append(out, ignore_index=True)
     log.info("Done!")
-    store_computation_result(df_time, "qubo_lp_time_result")
+    store_computation_result(df_time, "qubo_vs_backtrack_smp")
