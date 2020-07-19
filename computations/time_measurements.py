@@ -189,7 +189,7 @@ def main_time_measure():
     #     # log.info("Done!")
     df_time = pd.DataFrame()
     log.info(f"Backtracking vs. QUBO")
-    for size in sizes_smp:
+    for size in [i for i in range(3, 18)]:
         for index_f in range(samples_per_size_smp):
             log.info(f"At: {size}, {index_f}")
             out = measure_qubo_vs_backtracking(size, index_f)
