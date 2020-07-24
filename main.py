@@ -3,6 +3,7 @@ import os
 # evaluations
 import time
 
+from algorithms.solver.SMP.std_smp import StandardSMP
 from algorithms.solver.SMTI.qubo_smti import QUBO_SMTI
 from algorithms.storage import get_solution_qa, get_smp
 from computations.accuracy_measurements import main_accuracy, compute_qubo_en
@@ -30,15 +31,12 @@ if __name__ == '__main__':
             print("Insert Test Main")
             import numpy as np
 
-            mean_times = []
-            for size in range(3, 18):
-                print(size)
-                start = time.time()
-                measure_qubo_vs_backtracking(size, 0)
-                mean_times.append(time.time() - start)
-            print(mean_times)
-            print(np.mean(mean_times))
-            # matching = get_smp(1, 5)
+            matching = get_smp(1, 30)
+
+            start = time.time()
+            solver = StandardSMP(matching)
+            solver.solve()
+            print(time.time() - start)
             # print(matching.solutions)
             # solver = QUBO_SMTI(matching).pre_process()
             # solver.solve_qa(num_reads=1400, verbose=True)
