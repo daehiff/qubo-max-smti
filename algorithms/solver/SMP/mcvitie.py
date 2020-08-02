@@ -2,6 +2,8 @@ from copy import deepcopy
 
 import numpy as np
 
+from algorithms.solution import Solution
+
 
 class MCVITIE:
     def __init__(self, matching):
@@ -36,7 +38,7 @@ class MCVITIE:
         self.store_stable_marrigae(marriage)
         for i in range(1, self.matching.size):
             self.breakmarriage(malec, marriage, i)
-        return self.solutions
+        return list(map(lambda x: Solution(self.matching, x), self.solutions))
 
     def breakmarriage(self, malec: list, marriage: list, i: int):
         marriage[self.malechoice[i - 1][malec[i - 1] - 2]] = 0
