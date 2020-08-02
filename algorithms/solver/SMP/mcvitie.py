@@ -36,20 +36,20 @@ class MCVITIE:
         for i in range(1, self.matching.size + 1):
             self.proposal(i, malec, marriage)
         self.store_stable_marrigae(marriage)
+        # malec = [1 for _ in range(self.matching.size)]
         for i in range(1, self.matching.size):
             self.breakmarriage(malec, marriage, i)
         return list(map(lambda x: Solution(self.matching, x), self.solutions))
 
     def breakmarriage(self, malec: list, marriage: list, i: int):
-        marriage[self.malechoice[i - 1][malec[i - 1] - 2]] = 0
+        marriage[self.malechoice[i - 1][malec[i - 1] - 2]] = -i
         sucess = self.proposal(i, malec, marriage)
         if not sucess:  # GOTO EXIT
             self.unchanged[i - 1] = False
             return
         self.store_stable_marrigae(marriage)
-        malec_ = deepcopy(malec)
         for j in range(i, self.matching.size):
-            self.breakmarriage(malec_, marriage, j)
+            self.breakmarriage(malec, marriage, j)
 
         for j in range(i + 1, self.matching.size):
             self.unchanged[j - 1] = True
