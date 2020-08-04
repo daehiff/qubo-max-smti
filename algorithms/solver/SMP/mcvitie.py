@@ -36,7 +36,7 @@ class MCVITIE:
         for i in range(1, self.matching.size + 1):
             self.proposal(i, malec, marriage)
         self.store_stable_marrigae(marriage)
-        # malec = [1 for _ in range(self.matching.size)]
+
         for i in range(1, self.matching.size):
             self.breakmarriage(deepcopy(malec), deepcopy(marriage), i)
         return list(map(lambda x: Solution(self.matching, x), self.solutions))
