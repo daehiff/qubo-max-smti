@@ -26,8 +26,6 @@ def smp_acc_runtime_main():
 
 def compare_runtime(size, index_f):
     # TODO 1) SEGEV auch auf 'großem rechner'?
-    # TODO 2) plot erstellen?
-    # TODO 3) rödeln lassen
 
     matching = get_smp(index_f, size)
 
