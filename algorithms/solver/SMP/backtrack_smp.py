@@ -1,12 +1,17 @@
+import time
+
+
 class BACKTRACK_SMP:
     def __init__(self, matching):
         self.matching = matching
 
-    def solve(self):
+    def solve(self, time_limit=None):
+        start = time.time()
         solutions = []
         q = [-2 for _ in range(self.matching.size)]
         c = 0
         from_backtrack = False
+
         while True:
             while c < self.matching.size:
                 if not from_backtrack:
@@ -14,6 +19,9 @@ class BACKTRACK_SMP:
                 from_backtrack = False
 
                 while q[c] < self.matching.size:
+                    if time_limit is not None and time.time() - start >= time_limit:
+                        from algorithms.solution import Solution
+                        return list(map(lambda x: Solution(self.matching, x), solutions))
                     q[c] = q[c] + 1
                     if q[c] == self.matching.size:
                         c = self.backtrack(c)
