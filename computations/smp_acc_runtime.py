@@ -15,7 +15,7 @@ log = logging.getLogger()
 def smp_acc_runtime_main():
     ut.init_log()
     df_smp = pd.DataFrame()
-    for size in range(3, 19):
+    for size in range(3, smp_solve_max):
         for index_f in range(samples_per_size_smp):
             log.info(f"At: {size}, {index_f}")
             out = compare_runtime(size, index_f)
@@ -25,8 +25,6 @@ def smp_acc_runtime_main():
 
 
 def compare_runtime(size, index_f):
-    # TODO 1) SEGEV auch auf 'großem rechner'?
-
     matching = get_smp(index_f, size)
 
     start = time.time()
