@@ -29,7 +29,7 @@ def _barplot_en_results(qbsolv_results, sizes, solver_t="qa"):
     # plt.ylabel("portion of a instance [%]")
     plt.legend()
     # plt.title(f"Energy Comparison")
-    show_store_plot(f"{solver_t}" )
+    show_store_plot(f"{solver_t}")
 
 
 def plot_qubo_qa_vs_lp():
@@ -63,26 +63,20 @@ def plot_qubo_qa_vs_lp():
 
 
 def plot_smp_accuracy():
-    df_1 = get_computation_result("smp_qbsolv_count_result")
-    df_1["stable_solutions_q"] = df_1["stable_solutions_q"] / df_1["all_solutions"]
-    sizes_1 = df_1["size"].unique()
-    df_1var = df_1.groupby(["size"]).var()
-    df_1 = df_1.groupby(["size"]).mean()
-
-    df = get_computation_result("smp_result")
+    df = get_computation_result("smp_bt_time_qa_qbsolv")
     sizes = df["size"].unique()
-    df["qa_opt_en"] = df["qa_opt_en"] / df["matching_count"]
+    df["bt_stable"] = df["bt_stable"] / df["matching_count"]
     df["qa_stable"] = df["qa_stable"] / df["matching_count"]
-    df["qbsolv_opt_en"] = df["qbsolv_opt_en"] / df["matching_count"]
     df["qbsolv_stable"] = df["qbsolv_stable"] / df["matching_count"]
     dfvar = df.groupby(["size"]).var()
     df = df.groupby(["size"]).mean()
 
     plt.title("Accuracy for SMP")
-    width = 0.3
-    plt.bar(sizes - width / 2, 100 * df["qa_stable"], label="qa", width=width, align="center")
-    plt.bar(sizes_1 + width / 2, 100 * df_1["stable_solutions_q"], label="qbsolv", width=width, align="center")
-    plt.xticks(sizes_1)
+    width = 0.75
+    plt.bar(sizes - width / 3, 100 * df["qa_stable"], label="qa", width=width / 3, align="center")
+    plt.bar(sizes, 100 * df["qbsolv_stable"], label="qbsolv", width=width / 3, align="center")
+    plt.bar(sizes + width / 3, 100 * df["bt_stable"], label="backtracking", width=width / 3, align="center")
+    plt.xticks(sizes)
     plt.ylabel('portion of available solutions [%]')
     plt.xlabel('problem size')
     plt.legend()

@@ -246,7 +246,7 @@ class QUBO_SMTI:
             response = QBSolv().sample(BinaryQuadraticModel.from_numpy_matrix(self.qubo), num_repeats=num_repeats,
                                        target=target, algorithm=SOLUTION_DIVERSITY)
         elif self.mode == "bqm":
-            response = QBSolv().sample(self.qubo, num_repeats=num_repeats, target=target, algorithm=SOLUTION_DIVERSITY)
+            response = QBSolv().sample(self.qubo, num_repeats=num_repeats, target=target)
         else:
             raise Exception(f"mode: {self.mode} cannot be solved yet")
 
