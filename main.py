@@ -30,7 +30,7 @@ if __name__ == '__main__':
             smp_acc_runtime_main()
         elif sys.argv[1] == "-p":
             plot_accuracy_main()
-            # plot_time_evaluation_main()
+            plot_time_evaluation_main()
         elif sys.argv[1] == "-t":
             print("Insert Test Main")
             import numpy as np

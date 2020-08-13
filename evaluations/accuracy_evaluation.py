@@ -8,9 +8,9 @@ from algorithms.storage import get_computation_result, get_smti, show_store_plot
 
 
 def plot_accuracy_main():
-    # plot_accuracy_algorithms()
+    plot_accuracy_algorithms()
     plot_smp_accuracy()
-    # plot_qubo_qa_vs_lp()
+    plot_qubo_qa_vs_lp()
 
 
 def _barplot_en_results(qbsolv_results, sizes, solver_t="qa"):
@@ -64,7 +64,6 @@ def plot_qubo_qa_vs_lp():
 
 def plot_smp_accuracy():
     df = get_computation_result("smp_bt_time_qa_qbsolv")
-    print(df)
     sizes = df["size"].unique()
     df["bt_stable"] = df["bt_stable"] / df["matching_count"]
     df["qa_stable"] = df["qa_stable"] / df["matching_count"]
@@ -81,7 +80,7 @@ def plot_smp_accuracy():
     plt.ylabel('portion of available solutions [%]')
     plt.xlabel('problem size')
     plt.legend()
-    show_store_plot("smp_accuracy", show=True)
+    show_store_plot("smp_accuracy")
 
 
 def plot_accuracy_algorithms():
